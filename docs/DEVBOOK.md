@@ -5,12 +5,12 @@ Ce document trace l'avancement du développement de la plateforme d'annotation c
 ## Configuration initiale ⏳
 
 ### Configuration du projet
-- [ ] Initialisation du repository Git
-- [ ] Setup Node.js + Express
-- [ ] Configuration ESLint + Prettier
-- [ ] Setup MongoDB + Mongoose
-- [ ] Configuration Docker
-- [ ] Setup React
+- [✅] Initialisation du repository Git
+- [🏃] Setup Node.js + Express
+- [✅] Configuration ESLint + Prettier
+- [🏃] Setup MongoDB + Mongoose
+- [⏳] Configuration Docker
+- [✅] Setup React
 
 ### Configuration des tests
 - [ ] Setup Jest
@@ -20,15 +20,15 @@ Ce document trace l'avancement du développement de la plateforme d'annotation c
 ## Gestion des utilisateurs ⏳
 
 ### Backend
-- [ ] Modèle User (Mongoose)
-- [ ] Tests unitaires User
+- [🏃] Modèle User (Mongoose)
+- [🏃] Tests unitaires User
 - [ ] API Authentication
 - [ ] Tests d'intégration Auth
 - [ ] Middleware JWT
 - [ ] Système de rôles
 
 ### Frontend
-- [ ] Pages Login/Register
+- [🏃] Pages Login/Register
 - [ ] Tests composants Auth
 - [ ] Gestion du state Auth
 - [ ] Page profil utilisateur
