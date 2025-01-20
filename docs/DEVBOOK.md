@@ -5,14 +5,16 @@ Ce document trace l'avancement du développement de la plateforme d'annotation c
 ## Configuration initiale ⏳
 
 ### Configuration du projet
+
 - [✅] Initialisation du repository Git
-- [🏃] Setup Node.js + Express
+- [✅] Setup Node.js + Express
 - [✅] Configuration ESLint + Prettier
-- [🏃] Setup MongoDB + Mongoose
+- [✅] Setup MongoDB + Mongoose
 - [⏳] Configuration Docker
 - [✅] Setup React
 
 ### Configuration des tests
+
 - [ ] Setup Jest
 - [ ] Setup Cypress
 - [ ] Premiers tests de smoke
@@ -20,7 +22,8 @@ Ce document trace l'avancement du développement de la plateforme d'annotation c
 ## Gestion des utilisateurs ⏳
 
 ### Backend
-- [🏃] Modèle User (Mongoose)
+
+- [✅] Modèle User (Mongoose)
 - [🏃] Tests unitaires User
 - [ ] API Authentication
 - [ ] Tests d'intégration Auth
@@ -28,6 +31,7 @@ Ce document trace l'avancement du développement de la plateforme d'annotation c
 - [ ] Système de rôles
 
 ### Frontend
+
 - [🏃] Pages Login/Register
 - [ ] Tests composants Auth
 - [ ] Gestion du state Auth
@@ -36,6 +40,7 @@ Ce document trace l'avancement du développement de la plateforme d'annotation c
 ## Gestion des projets ⏳
 
 ### Backend
+
 - [ ] Modèle Project
 - [ ] Tests CRUD Project
 - [ ] Upload de fichiers
@@ -43,6 +48,7 @@ Ce document trace l'avancement du développement de la plateforme d'annotation c
 - [ ] Tests d'intégration
 
 ### Frontend
+
 - [ ] Liste des projets
 - [ ] Création/Edition projet
 - [ ] Upload interface
@@ -51,12 +57,14 @@ Ce document trace l'avancement du développement de la plateforme d'annotation c
 ## Interface d'annotation ⏳
 
 ### Backend
+
 - [ ] Modèle Annotation
 - [ ] API Annotations
 - [ ] Tests stockage
 - [ ] Validation formats
 
 ### Frontend
+
 - [ ] Canvas d'annotation
 - [ ] Outils de dessin
 - [ ] Système de labels
@@ -66,12 +74,14 @@ Ce document trace l'avancement du développement de la plateforme d'annotation c
 ## Collaboration ⏳
 
 ### Backend
+
 - [ ] Setup Socket.IO
 - [ ] Sync temps réel
 - [ ] Système de tâches
 - [ ] Tests WebSocket
 
 ### Frontend
+
 - [ ] Intégration Socket.IO
 - [ ] UI Collaboration
 - [ ] Liste des tâches
@@ -80,12 +90,14 @@ Ce document trace l'avancement du développement de la plateforme d'annotation c
 ## Contrôle qualité ⏳
 
 ### Backend
+
 - [ ] Workflow validation
 - [ ] Calcul métriques
 - [ ] API statistiques
 - [ ] Tests qualité
 
 ### Frontend
+
 - [ ] Interface review
 - [ ] Dashboard qualité
 - [ ] Visualisation stats
@@ -94,17 +106,20 @@ Ce document trace l'avancement du développement de la plateforme d'annotation c
 ## Export et intégration ⏳
 
 ### Backend
+
 - [ ] API Export
 - [ ] Formats multiples
 - [ ] Tests formats
 - [ ] Documentation API
 
 ### Frontend
+
 - [ ] Interface export
 - [ ] Preview données
 - [ ] Tests export
 
 ## Légende
+
 - ⏳ En attente
 - 🏃 En cours
 - ✅ Terminé
