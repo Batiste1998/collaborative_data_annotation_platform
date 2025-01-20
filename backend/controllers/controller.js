@@ -1,56 +1,70 @@
 const User = require('../models/User')
 
-//Résolveurs
-const userController = {
-    getAllUsers: async () => {
-        const users = await User.find({});
-        return users.map(user => ({
-            ...user._doc,
-            id: user._id,
-        }));
-    },
-  // Route pour chercher un user en particulier grâce à son id
-  user: async ({ id }) => {
-    const user = await User.findById(id)
-    return {
-      ...user._doc,
-      id: user._id,
+const getAllUsers = async () => {
+  try {
+    const user = await User.find({}).select('-password')
+    if (!user) {
+      throw new Error('No user found')
     }
-  },
-
-  addUser: async ({ username, email, password }) => {
-    const user = new User({
-      username,
-      email,
-      password
-    }) 
-    await user.save()
-    return {
-      ...user._doc,
-      id: user._id
-    }
-  },
-
-  updateUser: async ({password, username, email, userId}) => {
-    const user = await User.findByIdAndUpdate(
-      userId,
-      { $set: { password: password, username: username, email: email} },
-      { new: true}
-    )
-    return {
-      ...user._doc,
-      id: user._id,
-    }
-  },
-
-  deleteUser: async ({ id }) => {
-    const user = await User.findByIdAndDelete(id)
-    return {
-      ...user._doc,
-      id: user._id,
-    }
-  },
+    return user
+  } catch (error) {
+    throw new Error(`Error fetching users: ${error.message}`)
+  }
 }
 
+const getUserById = async (id) => {
+  try {
+    const user = await User.findById(id).select('-password')
+    if (!user) {
+      throw new Error('No user found')
+    }
+    return user
+  } catch (error) {
+    throw new Error(`Error fetching user: ${error.message}`)
+  }
+}
 
-module.exports = userController
+const createUser = async (userData) => {
+  try {
+    const user = new User(userData)
+    await user.save()
+    return user
+  } catch (error) {
+    throw new Error(`Error creating user: ${error.message}`)
+  }
+}
+
+const updateUser = async (id, updates) => {
+  try {
+    const user = await User.findByIdAndUpdate(id, updates, {
+      new: true,
+      runValidators: true,
+    }).select('-password')
+    if (!user) {
+      throw new Error('No user found')
+    }
+    return user
+  } catch (error) {
+    throw new Error(`Error updating user: ${error.message}`)
+  }
+}
+
+const deleteUser = async (id) => {
+  try {
+    const user = await User.findByIdAndDelete(id)
+    if (!user) {
+      throw new Error('No user found')
+    }
+    return user
+  } catch (error) {
+    throw new Error(`Error deleting user: ${error.message}`)
+  }
+}
+
+module.exports = {
+  getAllUsers,
+  getUserById,
+  createUser,
+  updateUser,
+  deleteUser,
+}
