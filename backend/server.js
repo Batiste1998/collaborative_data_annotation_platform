@@ -1,16 +1,29 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const cors = require('cors')
+const helmet = require('helmet')
+const rateLimit = require('express-rate-limit')
 const accountsRouter = require('./routes/userRoutes')
 const { loginUser } = require('./controllers/userController')
-const errorHandler = require('./middlewares/errorHandler')
 require('dotenv').config()
+
+if (!process.env.JWT_SECRET) {
+  console.error('JWT_SECRET is not defined')
+  process.exit(1)
+}
 
 const app = express()
 const PORT = process.env.PORT || 3000
 const MONGODB_URI = process.env.MONGODB_URI
 
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+})
+
 app.use(cors())
+app.use(helmet())
+app.use(limiter)
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
@@ -26,7 +39,10 @@ app.post('/login', async (req, res, next) => {
   }
 })
 
-app.use(errorHandler)
+app.use((err, req, res, next) => {
+  console.error(err.stack)
+  res.status(err.statusCode || 500).json({ error: err.message })
+})
 
 const connectDB = async () => {
   try {

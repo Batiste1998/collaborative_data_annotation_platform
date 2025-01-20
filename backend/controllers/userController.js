@@ -67,18 +67,22 @@ const deleteUser = async (id) => {
 }
 
 const loginUser = async (email, password) => {
-  const user = await User.findOne({ email })
-  if (!user) {
-    throw new Error('Invalid login credentials')
+  try {
+    const user = await User.findOne({ email })
+    if (!user) {
+      throw new Error('Invalid login credentials')
+    }
+    const isMatch = await user.comparePassword(password, user.password)
+    if (!isMatch) {
+      throw new Error('Invalid login credentials')
+    }
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: '1h',
+    })
+    return { user: { id: user._id, email: user.email }, token }
+  } catch (error) {
+    throw error
   }
-  const isMatch = await user.comparePassword(password, user.password)
-  if (!isMatch) {
-    throw new Error('Invalid login credentials')
-  }
-  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-    expiresIn: '1h',
-  })
-  return { user: { id: user._id , email: user.email}, token }
 }
 
 module.exports = {
