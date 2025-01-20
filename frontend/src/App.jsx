@@ -1,15 +1,15 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import Login from './components/auth/Login'
+import LoginPage from './pages/auth/LoginPage'
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={<LoginPage />} />
         <Route
           path="/"
           element={
-            <h1 className="text-3xl font-bold underline">Hello World!</h1>
+            <h1 className="text-3xl font-bold underline text-red-500">Hello World!</h1>
           }
         />
       </Routes>
