@@ -16,6 +16,7 @@ export default {
     },
     fontFamily: {
         Gelasio: ["Gelasio"],
+        Roboto: ["Roboto"]
       },
   },
   plugins: [],
