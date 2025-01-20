@@ -1,7 +1,9 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const cors = require('cors')
-const accountsRouter = require('./routes/accounts')
+const accountsRouter = require('./routes/userRoutes')
+const { loginUser } = require('./controllers/userController')
+const errorHandler = require('./middlewares/errorHandler')
 require('dotenv').config()
 
 const app = express()
@@ -14,10 +16,17 @@ app.use(express.urlencoded({ extended: true }))
 
 app.use('/api/users', accountsRouter)
 
-app.use((err, req, res, next) => {
-  console.error(err.stack)
-  res.status(500).json({ error: err.message || 'Something went wrong' })
+app.post('/login', async (req, res, next) => {
+  try {
+    const { email, password } = req.body
+    const result = await loginUser(email, password)
+    res.json(result)
+  } catch (error) {
+    next(error)
+  }
 })
+
+app.use(errorHandler)
 
 const connectDB = async () => {
   try {

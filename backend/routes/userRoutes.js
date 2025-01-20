@@ -7,18 +7,16 @@ const {
     createUser,
     updateUser,
     deleteUser,
-}= require('../controllers/controller')
+}= require('../controllers/userController')
+const { authenticateToken } = require('../middlewares/auth')
+const asyncHandler = require('../utils/asyncHandler')
 
-const asyncHandler = (fn) => (req, res, next) => {
-    Promise.resolve(fn(req, res, next)).catch(next)
-}
-
-router.get('/', asyncHandler(async (req, res) => {
+router.get('/', authenticateToken, asyncHandler(async (req, res) => {
     const users = await getAllUsers()
     res.json(users)
 }))
 
-router.get('/:id', asyncHandler(async (req, res) => {
+router.get('/:id', authenticateToken, asyncHandler(async (req, res) => {
     const user = await getUserById(req.params.id)
     res.json(user)
 }))
@@ -28,12 +26,12 @@ router.post('/', asyncHandler(async (req, res) => {
     res.status(201).json(user)
 }))
 
-router.put('/:id', asyncHandler(async (req, res) => {
+router.put('/:id', authenticateToken, asyncHandler(async (req, res) => {
     const user = await updateUser(req.params.id, req.body)
     res.json(user)
 }))
 
-router.delete('/:id', asyncHandler(async (req, res) => {
+router.delete('/:id', authenticateToken, asyncHandler(async (req, res) => {
     await deleteUser(req.params.id)
     res.json({ message: 'User deleted successfully' })
 }))

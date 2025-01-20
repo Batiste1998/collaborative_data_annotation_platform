@@ -1,4 +1,6 @@
 const User = require('../models/User')
+const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 
 const getAllUsers = async () => {
   try {
@@ -36,6 +38,9 @@ const createUser = async (userData) => {
 
 const updateUser = async (id, updates) => {
   try {
+    if (updates.password) {
+      updates.password = await bcrypt.hash(updates.password, 10)
+    }
     const user = await User.findByIdAndUpdate(id, updates, {
       new: true,
       runValidators: true,
@@ -61,10 +66,26 @@ const deleteUser = async (id) => {
   }
 }
 
+const loginUser = async (email, password) => {
+  const user = await User.findOne({ email })
+  if (!user) {
+    throw new Error('Invalid login credentials')
+  }
+  const isMatch = await user.comparePassword(password, user.password)
+  if (!isMatch) {
+    throw new Error('Invalid login credentials')
+  }
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    expiresIn: '1h',
+  })
+  return { user: { id: user._id , email: user.email}, token }
+}
+
 module.exports = {
   getAllUsers,
   getUserById,
   createUser,
   updateUser,
   deleteUser,
+  loginUser,
 }
