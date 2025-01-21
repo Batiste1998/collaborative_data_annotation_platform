@@ -10,9 +10,11 @@ export default {
       transparent: 'transparent',
       current: 'currentColor',
       'bleuElectrique': '#3932FF',
-      'fuschia': '#FF00C8',
-      'violet':'#A76ED2',
-      'white': '#FFFFFF'
+      'white': '#FFFFFF',
+      'roseFond': '#D26EBD',
+      'roseBordure': '#FF00C8',
+      'violetFond': '#A76ED2',
+      'violetBordure': '#AE00FF'
     },
     fontFamily: {
         Gelasio: ["Gelasio"],
