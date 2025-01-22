@@ -6,17 +6,17 @@ const Registration = ({ format }) => {
             {format === 'inscription' && (
                 <div className="flex gap-20 justify-between">
                     <label className="text-white text-2xl font-Roboto">Username</label>
-                    <input />
+                    <input className='inputRegistration'/>
                 </div>
             )}
             <div className="flex gap-20 justify-between">
                 <label className="text-white text-2xl font-Roboto">Email</label>
-                <input />
+                <input className='inputRegistration'/>
             </div>
             <div className="flex gap-20 justify-between">
                 <label className="text-white text-2xl font-Roboto">Password</label>
                 <div>
-                    <input />
+                    <input className='inputRegistration'/>
                     {format === 'inscription' && (
                         <a href="/login">
                             <p className="mt-2 underline underline-offset-4 text-white font-semibold">

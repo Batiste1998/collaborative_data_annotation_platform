@@ -23,7 +23,7 @@
     font-style: bold;
 }
 
-input {
+.inputRegistration {
     border: 1px solid white;
     border-radius: 50rem;
     background-color: transparent;
@@ -34,7 +34,7 @@ input {
     font-family: 'Roboto';
 }
 
-input:focus {
+.inputRegistration:focus {
     color: black;
     background-color: white;
     opacity: 70%;
