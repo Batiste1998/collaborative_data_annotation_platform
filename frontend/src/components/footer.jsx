@@ -3,7 +3,7 @@ import Bouton from "./button"
 
 const Footer = () => {
     return(
-        <div className="bg-bleuElectrique w-full py-10 p-32 flex gap-28 items-center justify-evenly" >
+        <div className="bg-bleuElectrique w-full py-10 p-32 flex gap-28 items-center justify-evenly fixed bottom-0" >
             <img src={Flower} />
             <div className="flex gap-12">
                 <p className="text-white text-base font-Roboto font-bold cursor-pointer">Terms of use</p>
