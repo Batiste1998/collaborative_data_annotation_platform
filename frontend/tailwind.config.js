@@ -14,7 +14,8 @@ export default {
       'roseFond': '#D26EBD',
       'roseBordure': '#FF00C8',
       'violetFond': '#A76ED2',
-      'violetBordure': '#AE00FF'
+      'violetBordure': '#AE00FF',
+      'black': '#000000'
     },
     fontFamily: {
         Gelasio: ["Gelasio"],
