@@ -22,3 +22,21 @@
     font-weight: 600;
     font-style: bold;
 }
+
+input {
+    border: 1px solid white;
+    border-radius: 50rem;
+    background-color: transparent;
+    padding-inline: 12px;
+    padding-block: 8px;
+    width: 15.5rem;
+    color: white;
+    font-family: 'Roboto';
+}
+
+input:focus {
+    color: black;
+    background-color: white;
+    opacity: 70%;
+    outline: none;
+}
