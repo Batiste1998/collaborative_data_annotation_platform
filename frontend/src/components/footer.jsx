@@ -11,8 +11,8 @@ const Footer = ({isRegistration}) => {
                 <p className="text-white text-base font-Roboto font-bold cursor-pointer">Site map</p>
             </div>
             <div className="flex gap-6">
-                <Bouton variant="primary" text="Inscription" link="/login"/>
-                <Bouton variant="secondary" text="Connexion" link="/connexion"/>
+                <Bouton variant="primary" text="Inscription" link="/registrer"/>
+                <Bouton variant="secondary" text="Connexion" link="/login"/>
             </div>
         </div>
     )
