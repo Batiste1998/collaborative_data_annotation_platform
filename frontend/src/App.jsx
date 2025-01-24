@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import LoginPage from './pages/auth/LoginPage'
 import RegistrerPage from './pages/auth/RegistrerPage'
+import CreateProjectPage from './pages/CreateProjectPage'
 
 function App() {
   return (
@@ -8,6 +9,7 @@ function App() {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/registrer" element={<RegistrerPage />} />
+        <Route path="/create" element={<CreateProjectPage />} />
         <Route
           path="/"
           element={
