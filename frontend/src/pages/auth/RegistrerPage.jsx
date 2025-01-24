@@ -11,7 +11,7 @@ const RegistrerPage = () => {
                 <Registration format="inscription"/>
             </div>
             <Decoration/>
-            <Footer/>
+            <Footer isRegistration={true}/>
         </div>
     )
 }

@@ -36,7 +36,7 @@ const CreateProjectPage = () => {
                     <Select label={"Task 6"} placeholder={"Project's members"} variant={"secondary"} list={["Isabelle", "Nicolas", "Clément", "Virginie", "Batiste", "Julie"]}/>
                 </div>
             </div>
-            <Footer/>
+            <Footer isRegistration={false}/>
         </div>
     )
 }

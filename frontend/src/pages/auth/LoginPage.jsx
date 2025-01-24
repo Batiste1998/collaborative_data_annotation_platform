@@ -11,7 +11,7 @@ const LoginPage = () => {
                 <Registration format="connexion"/>
             </div>
             <Decoration/>
-            <Footer/>
+            <Footer isRegistration={true}/>
         </div>
     )
 }
