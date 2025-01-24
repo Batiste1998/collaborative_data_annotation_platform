@@ -32,6 +32,7 @@
     width: 15.5rem;
     color: white;
     font-family: 'Roboto';
+    transition: all 150ms linear;
 }
 
 .inputRegistration:focus {
@@ -39,4 +40,31 @@
     background-color: white;
     opacity: 70%;
     outline: none;
+}
+
+.inputCreation {
+    border: 1px solid black;
+    border-radius: 50rem;
+    background-color: white;
+    padding-inline: 20px;
+    padding-block: 12px;
+    width: 320px;
+    transition: all 150ms linear;
+}
+
+.inputCreation::placeholder{
+    color:gray;
+    font-weight: bold;
+    font-family: 'Roboto';
+}
+
+.inputCreation:focus{
+    background-color: #3932FF;
+    opacity: 80%;
+    color: white;
+    outline: none;
+}
+
+.inputCreation:focus::placeholder {
+    color: white;
 }
