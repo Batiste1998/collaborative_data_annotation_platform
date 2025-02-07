@@ -13,7 +13,7 @@ const Name = ({name}) => {
     const randomBorder = colorPairs[randomBg];
     return (
        <div
-            className="py-1 px-5 rounded-full font-Roboto font-semibold text-black"
+            className="py-1 px-5 rounded-full font-Roboto font-semibold text-black w-fit"
             style={{ backgroundColor: randomBg, border: `2px solid ${randomBorder}` }}>
             <p>{name}</p>
         </div>

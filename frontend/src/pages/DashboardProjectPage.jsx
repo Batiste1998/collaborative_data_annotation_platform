@@ -7,6 +7,7 @@ import Select from '../components/select'
 import Button from '../components/button'
 import Name from '../components/name'
 import Task from '../components/task'
+import Message from '../components/message'
 
 
 const DashboardProjectPage = ({name, members, description}) => {
@@ -59,7 +60,7 @@ const DashboardProjectPage = ({name, members, description}) => {
                 </div>
             </div>
             {/* TASKS */}
-            <div className="bg-white h-fit gap-12 pt-12 pb-[20rem] flex justify-start flex-col mx-auto w-9/12">
+            <div className="bg-white h-fit gap-12 pt-12 pb-[5rem] flex justify-start flex-col mx-auto w-9/12">
                 <h2 className="text-xl font-Roboto text-black font-bold">Tasks</h2>
                 <div className="flex flex-wrap w-full gap-16">
                     <Task image="../../public/chat1.jpg" members={["Isabelle"]} finished/>
@@ -68,6 +69,28 @@ const DashboardProjectPage = ({name, members, description}) => {
                     <Task image="../../public/chat4.jpg" members={[]}/>
                     <Task image="../../public/chat5.jpg" members={["Marie", "Clément", "Cathy"]}/>
                     <Task image="../../public/chat6.jpg" members={["Romain"]}/>
+                </div>
+                <Button variant="secondary" text="Export anonations"/>
+            </div>
+            {/* CHAT */}
+            <div className="bg-white h-fit gap-10 pt-12 pb-[8rem] flex justify-start flex-col mx-auto w-9/12">
+                <h2 className="text-xl font-Roboto text-black font-bold">Chat</h2>
+                <div className="flex flex-col gap-4 h-[35rem] overflow-auto pb-5 scrollable-container">
+                    <Message member="Julie"/>
+                    <Message member="Julie"/>
+                    <Message member="Julie"/>
+                    <Message member="Julie"/>
+                    <Message member="Julie"/>
+                    <Message member="Julie"/>
+                    <Message member="Julie"/>
+                    <Message member="Julie"/>
+                </div>
+                <h3 className="text-xl font-Roboto text-black font-bold">Votre message</h3>
+                <div className="w-[75%] flex flex-col gap-8">
+                    <textarea className="bg-white w-full shadow-lg h-[15rem] mt-1 ml-1 p-8 flex flex-col gap-4 rounded-3xl"/>
+                    <div className="w-full flex justify-end">
+                        <Button variant="primary" text="Envoyer"/>
+                    </div>
                 </div>
             </div>
             <Footer isRegistration={false}/>
