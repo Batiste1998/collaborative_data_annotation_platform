@@ -7,7 +7,7 @@ const LoginPage = () => {
     return(
         <div className='bg-bleuElectrique py-auto h-screen'>
             <Header/>
-            <div className="w-3/4 my-32 flex justify-evenly">
+            <div className="w-full sm:w-3/4 px-4 sm:px-0 my-32 flex justify-center sm:justify-end md:justify-evenly">
                 <Registration format="connexion"/>
             </div>
             <Decoration/>

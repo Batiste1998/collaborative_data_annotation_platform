@@ -35,6 +35,26 @@
     transition: all 150ms linear;
 }
 
+@media (min-width: 320px) {
+    .inputRegistration {
+        padding-block: 4px;
+        width: 13.5rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .inputRegistration {
+        padding-block: 6px;
+        width: 15.5rem;
+    }
+}
+
+@media (min-width: 1200px) {
+    .inputRegistration {
+        padding-block: 8px;
+    }
+}
+
 .inputRegistration:focus {
     color: black;
     background-color: white;
