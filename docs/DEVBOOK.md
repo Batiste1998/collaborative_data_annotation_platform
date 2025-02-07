@@ -15,9 +15,8 @@ Ce document trace l'avancement du développement de la plateforme d'annotation c
 
 ### Configuration des tests
 
-- [ ] Setup Jest
+- [✅] Setup Jest
 - [ ] Setup Cypress
-- [ ] Premiers tests de smoke
 
 ## Gestion des utilisateurs ⏳
 
@@ -25,10 +24,9 @@ Ce document trace l'avancement du développement de la plateforme d'annotation c
 
 - [✅] Modèle User (Mongoose)
 - [🏃] Tests unitaires User
-- [ ] API Authentication
-- [ ] Tests d'intégration Auth
-- [ ] Middleware JWT
-- [ ] Système de rôles
+- [✅] API Authentication
+- [✅] Middleware JWT
+- [✅] Système de rôles
 
 ### Frontend
 
