@@ -28,7 +28,7 @@ const MultiSelect = ({ label, placeholder, list, variant }) => {
 
     return (
         <div className="relative" ref={selectRef}>
-            <div className={`flex gap-4 ${variant === "primary" ? "flex-col" : "flex-row items-center justify-between pl-20"}`}>
+            <div className={`flex gap-4 ${variant === "primary" ? "flex-col" : "flex-row items-center justify-between pl-2 sm:pl-5 lg:pl-8 xl:pl-20 flex-wrap"}`}>
                 <label className="text-black font-Roboto font-bold text-xl">{label}</label>
                 <button
                     className="min-w-[300px] bg-white border border-black rounded-full px-4 py-3 text-left flex justify-between items-center cursor-pointer 
@@ -42,7 +42,7 @@ const MultiSelect = ({ label, placeholder, list, variant }) => {
                 </button>
             </div>
             {isOpen && (
-                <ul className={`absolute mt-2 bg-white border border-black rounded-xl shadow-lg z-10  ${variant === "primary" ? "w-full" : "translate-x-[50%] min-w-[300px]"}`}>
+                <ul className={`absolute mt-2 bg-white border border-black rounded-xl shadow-lg z-20  ${variant === "primary" ? "w-full" : "translate-x-[1.25rem] sm:translate-x-[30%] lg:translate-x-[50%] min-w-[290px]"}`}>
                     {list.map((option, index) => (
                         <li
                             key={index}
