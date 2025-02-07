@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 
-const Select = ({ label, placeholder, list, variant }) => {
+const MultiSelect = ({ label, placeholder, list, variant }) => {
     const [isOpen, setIsOpen] = useState(false);
-    const [selected, setSelected] = useState(placeholder);
+    const [selected, setSelected] = useState([]);
     const selectRef = useRef(null);
-    
+
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (selectRef.current && !selectRef.current.contains(event.target)) {
@@ -18,6 +18,14 @@ const Select = ({ label, placeholder, list, variant }) => {
         };
     }, []);
 
+    const toggleSelection = (option) => {
+        setSelected((prevSelected) =>
+            prevSelected.includes(option)
+                ? prevSelected.filter((item) => item !== option)
+                : [...prevSelected, option]
+        );
+    };
+
     return (
         <div className="relative" ref={selectRef}>
             <div className={`flex gap-4 ${variant === "primary" ? "flex-col" : "flex-row items-center justify-between pl-20"}`}>
@@ -27,7 +35,7 @@ const Select = ({ label, placeholder, list, variant }) => {
                     focus:outline-none text-gray font-Roboto font-bold focus:bg-bleuElectrique focus:text-white transition duration-200 linear"
                     onClick={() => setIsOpen(!isOpen)}
                 >
-                    {selected}
+                    {selected.length > 0 ? selected.join(", ") : placeholder}
                     <svg className={`w-5 h-5 transition-transform ${isOpen ? "rotate-180" : ""}`} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
                     </svg>
@@ -38,12 +46,15 @@ const Select = ({ label, placeholder, list, variant }) => {
                     {list.map((option, index) => (
                         <li
                             key={index}
-                            className="px-4 py-3 hover:bg-blue-500 hover:bg-roseFond cursor-pointer transition w-[400px] rounded-xl hover:text-white font-Roboto font-semibold text-gray"
-                            onClick={() => {
-                                setSelected(option);
-                                setIsOpen(false);
-                            }}
+                            className={`px-4 py-3 cursor-pointer transition w-[400px] rounded-xl font-Roboto font-semibold text-gray flex items-center hover:bg-roseFond hover:text-white`}
+                            onClick={() => toggleSelection(option)}
                         >
+                            <input 
+                                type="checkbox" 
+                                checked={selected.includes(option)} 
+                                onChange={() => toggleSelection(option)} 
+                                className="mr-2"
+                            />
                             {option}
                         </li>
                     ))}
@@ -53,4 +64,4 @@ const Select = ({ label, placeholder, list, variant }) => {
     );
 };
 
-export default Select;
+export default MultiSelect;
