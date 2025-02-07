@@ -36,17 +36,24 @@ const DashboardProjectPage = ({name, members, description}) => {
                     <Input placeholder={description} text="Project's description"/>
                     <Select label="Project's memnbers" placeholder="Project's members" variant={"primary"} list={["Isabelle", "Nicolas", "Clément", "Virginie", "Batiste", "Julie"]}/>
                     <div className='flex justify-end gap-3'>
-                        <Button variant={"primary"} text={"Create project"} link={""}/>
+                        <Button variant={"primary"} text={"Send data"} link={""}/>
                         <Button variant={"secondary"} text={"Import a file"} link={""}/>
                     </div>
                 </div>
-                <div className='flex flex-col gap-8 before:content-[""] before:absolute before:bg-violetBordure before:opacity-40 before:w-screen before:h-[125%] before:z-0 z-10 relative before:rounded-bl-3xl before:translate-y-[-3rem]'>
-                    <Select label={"Task 1"} placeholder={"Project’s members"} variant={"secondary"} list={["Isabelle", "Nicolas", "Clément", "Virginie", "Batiste", "Julie"]}/>
-                    <Select label={"Task 2"} placeholder={"Project’s members"} variant={"secondary"} list={["Isabelle", "Nicolas", "Clément", "Virginie", "Batiste", "Julie"]}/>
-                    <Select label={"Task 3"} placeholder={"Project's members"} variant={"secondary"} list={["Isabelle", "Nicolas", "Clément", "Virginie", "Batiste", "Julie"]}/>
-                    <Select label={"Task 4"} placeholder={"Project's members"} variant={"secondary"} list={["Isabelle", "Nicolas", "Clément", "Virginie", "Batiste", "Julie"]}/>
-                    <Select label={"Task 5"} placeholder={"Project's members"} variant={"secondary"} list={["Isabelle", "Nicolas", "Clément", "Virginie", "Batiste", "Julie"]}/>
-                    <Select label={"Task 6"} placeholder={"Project's members"} variant={"secondary"} list={["Isabelle", "Nicolas", "Clément", "Virginie", "Batiste", "Julie"]}/>
+                <div className='flex flex-col gap-6 before:content-[""] before:absolute before:bg-violetBordure before:opacity-40 before:w-screen before:h-[125%] before:z-0 z-10 relative before:rounded-bl-3xl before:translate-y-[-3rem] max-w-[45rem]'>
+                    <h2 className="pl-20 mb-2 font-Roboto text-black text-2xl font-bold ">Current project data</h2>
+                    <p className="pl-20 font-Roboto text-black text-xl">{name}</p>
+                    <p className="pl-20 font-Roboto text-black text-xl">{description}</p>
+                    <div className="pl-20 z-10">
+                        <ul className="flex gap-4 flex-wrap">
+                        {members.map((member, index) => (
+                            <li
+                                key={index}>
+                                <Name name={member}/>
+                            </li>
+                        ))}
+                        </ul>
+                    </div>
                 </div>
             </div>
             <Footer isRegistration={false}/>
