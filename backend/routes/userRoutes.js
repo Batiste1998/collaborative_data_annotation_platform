@@ -8,13 +8,15 @@ const {
   updateUser,
   deleteUser,
 } = require('../controllers/userController')
-const { authenticateToken } = require('../middlewares/auth')
+const { authenticateToken, requireRole } = require('../middlewares/auth')
 const {
   createUserValidation,
   updateUserValidation,
   validateId,
+  adminCreateUserValidation,
 } = require('../validation/userValidation')
 
+// Validation middleware
 const validate = (req, res, next) => {
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
@@ -23,46 +25,120 @@ const validate = (req, res, next) => {
   next()
 }
 
+// Get all users (with role-based filtering)
 router.get('/', authenticateToken, async (req, res) => {
-  const users = await getAllUsers()
-  res.json(users)
+  try {
+    const users = await getAllUsers(req.user.id, req.user.role)
+    res.json(users)
+  } catch (error) {
+    res.status(400).json({ message: error.message })
+  }
 })
 
+// Get user by ID (with role-based access control)
 router.get(
   '/:id',
   authenticateToken,
   validateId,
   validate,
   async (req, res) => {
-    const user = await getUserById(req.params.id)
-    res.json(user)
+    try {
+      const user = await getUserById(req.params.id, req.user.id, req.user.role)
+      res.json(user)
+    } catch (error) {
+      if (error.message.includes('Not authorized')) {
+        return res.status(403).json({ message: error.message })
+      }
+      res.status(400).json({ message: error.message })
+    }
   }
 )
 
+// Create new user (public route for registration)
 router.post('/', createUserValidation, validate, async (req, res) => {
-  const user = await createUser(req.body)
-  res.status(201).json(user)
+  try {
+    // Set default role to annotator for new registrations
+    const userData = {
+      ...req.body,
+      role: 'annotator', // Only admin can create users with different roles
+      isActive: true,
+    }
+    const user = await createUser(userData)
+    res.status(201).json(user)
+  } catch (error) {
+    res.status(400).json({ message: error.message })
+  }
 })
 
+// Update user (with role-based permissions)
 router.put(
   '/:id',
   authenticateToken,
   updateUserValidation,
   validate,
   async (req, res) => {
-    const user = await updateUser(req.params.id, req.body)
-    res.json(user)
+    try {
+      const user = await updateUser(
+        req.params.id,
+        req.body,
+        req.user.id,
+        req.user.role
+      )
+      res.json(user)
+    } catch (error) {
+      if (error.message.includes('Not authorized')) {
+        return res.status(403).json({ message: error.message })
+      }
+      res.status(400).json({ message: error.message })
+    }
   }
 )
 
+// Delete user (with role-based permissions)
 router.delete(
   '/:id',
   authenticateToken,
   validateId,
   validate,
   async (req, res) => {
-    await deleteUser(req.params.id)
-    res.json({ message: 'User deleted successfully' })
+    try {
+      const result = await deleteUser(req.params.id, req.user.id, req.user.role)
+      res.json(result)
+    } catch (error) {
+      if (error.message.includes('Not authorized')) {
+        return res.status(403).json({ message: error.message })
+      }
+      res.status(400).json({ message: error.message })
+    }
+  }
+)
+
+// Admin route to create users with specific roles
+// Admin route to create users with specific roles
+router.post(
+  '/admin/create',
+  authenticateToken,
+  requireRole('admin'),
+  adminCreateUserValidation,
+  validate,
+  async (req, res) => {
+    try {
+      // Admin can specify role and isActive
+      const userData = {
+        ...req.body,
+        role: req.body.role || 'annotator',
+        isActive: req.body.isActive !== undefined ? req.body.isActive : true,
+      }
+      const user = await createUser(userData)
+      res.status(201).json(user)
+    } catch (error) {
+      if (error.message.includes('duplicate key')) {
+        return res.status(400).json({
+          message: 'A user with this email already exists',
+        })
+      }
+      res.status(400).json({ message: error.message })
+    }
   }
 )
 
