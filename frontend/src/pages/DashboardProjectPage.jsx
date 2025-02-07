@@ -6,6 +6,7 @@ import Input from '../components/input'
 import Select from '../components/select'
 import Button from '../components/button'
 import Name from '../components/name'
+import Task from '../components/task'
 
 
 const DashboardProjectPage = ({name, members, description}) => {
@@ -30,7 +31,8 @@ const DashboardProjectPage = ({name, members, description}) => {
                 </div>
                 <Decoration className="absolute right-0"/>
             </div>
-            <div className="bg-white h-fit gap-6 pt-12 pb-[20rem] flex justify-evenly">
+            {/* PROJECT's DATA */}
+            <div className="bg-white h-fit gap-6 pt-12 pb-[8rem] flex justify-evenly">
                 <div className="flex flex-col gap-8">
                     <Input text="Project's name" placeholder={name} />
                     <Input placeholder={description} text="Project's description"/>
@@ -54,6 +56,18 @@ const DashboardProjectPage = ({name, members, description}) => {
                         ))}
                         </ul>
                     </div>
+                </div>
+            </div>
+            {/* TASKS */}
+            <div className="bg-white h-fit gap-12 pt-12 pb-[20rem] flex justify-start flex-col mx-auto w-9/12">
+                <h2 className="text-xl font-Roboto text-black font-bold">Tasks</h2>
+                <div className="flex flex-wrap w-full gap-16">
+                    <Task image="../../public/chat1.jpg" members={["Isabelle"]} finished/>
+                    <Task image="../../public/chat2.jpg" members={["Isabelle", "Jean"]} checked/>
+                    <Task image="../../public/chat3.jpg" members={["Batiste"]} finished checked/>
+                    <Task image="../../public/chat4.jpg" members={[]}/>
+                    <Task image="../../public/chat5.jpg" members={["Marie", "Clément", "Cathy"]}/>
+                    <Task image="../../public/chat6.jpg" members={["Romain"]}/>
                 </div>
             </div>
             <Footer isRegistration={false}/>

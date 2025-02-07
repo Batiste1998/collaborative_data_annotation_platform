@@ -31,7 +31,7 @@ const MultiSelect = ({ label, placeholder, list, variant }) => {
             <div className={`flex gap-4 ${variant === "primary" ? "flex-col" : "flex-row items-center justify-between pl-20"}`}>
                 <label className="text-black font-Roboto font-bold text-xl">{label}</label>
                 <button
-                    className="w-[500px] bg-white border border-black rounded-full px-4 py-3 text-left flex justify-between items-center cursor-pointer 
+                    className="min-w-[300px] bg-white border border-black rounded-full px-4 py-3 text-left flex justify-between items-center cursor-pointer 
                     focus:outline-none text-gray font-Roboto font-bold focus:bg-bleuElectrique focus:text-white transition duration-200 linear"
                     onClick={() => setIsOpen(!isOpen)}
                 >
@@ -42,11 +42,11 @@ const MultiSelect = ({ label, placeholder, list, variant }) => {
                 </button>
             </div>
             {isOpen && (
-                <ul className={`absolute mt-2 bg-white border border-black rounded-xl shadow-lg z-10 w-[400px] ${variant === "primary" ? "translate-x-[50px]" : "translate-x-[50%]"}`}>
+                <ul className={`absolute mt-2 bg-white border border-black rounded-xl shadow-lg z-10  ${variant === "primary" ? "w-full" : "translate-x-[50%] min-w-[300px]"}`}>
                     {list.map((option, index) => (
                         <li
                             key={index}
-                            className={`px-4 py-3 cursor-pointer transition w-[400px] rounded-xl font-Roboto font-semibold text-gray flex items-center hover:bg-roseFond hover:text-white`}
+                            className={`px-4 py-3 cursor-pointer transition ${variant === "primary" ? "w-full" : "min-w-[300px]"} rounded-xl font-Roboto font-semibold text-gray flex items-center hover:bg-roseFond hover:text-white`}
                             onClick={() => toggleSelection(option)}
                         >
                             <input 
