@@ -13,11 +13,11 @@ const CreateProjectPage = () => {
             <Header/>
             <div className="bg-bleuElectrique h-screen lg:h-[70vw] xl:h-screen">
                 <div className="w-3/4 py-20 lg:py-28 xl:py-32 flex justify-evenly">
-                    <h1 className="font-Gelasio text-6xl lg:text-7xl xl:text-8xl text-white w-3/6">Create a new project</h1>
+                    <h1 className="font-Gelasio text-6xl lg:text-7xl xl:text-8xl text-white w-5/6 md:w-3/6">Create a new project</h1>
                 </div>
                 <Decoration className="absolute right-0"/>
             </div>
-            <div className="bg-white h-fit gap-6 pt-12 pb-[8rem] lg:pb-[10rem] xl:pb-[15rem] flex justify-start lg:justify-evenly flex-wrap lg:flex-nowrap px-6 lg:px-0 justify-center sm:justify-start">
+            <div className="bg-white h-fit gap-6 pt-12 pb-[8rem] lg:pb-[10rem] xl:pb-[15rem] flex lg:justify-evenly flex-wrap lg:flex-nowrap px-6 lg:px-0 justify-center sm:justify-start">
                 <div className="flex flex-col gap-8 mb-14 lg:mb-0">
                     <Input text="Project's name" placeholder="Project's name"/>
                     <Input text="Project's description" placeholder="Project's description"/>

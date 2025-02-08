@@ -29,7 +29,7 @@ const MultiSelect = ({ label, placeholder, list, variant }) => {
     return (
         <div className="relative" ref={selectRef}>
             <div className={`flex gap-4 ${variant === "primary" ? "flex-col" : "flex-row items-center justify-between pl-2 sm:pl-5 lg:pl-8 xl:pl-20 flex-wrap"}`}>
-                <label className="text-black font-Roboto font-bold text-xl">{label}</label>
+                <label className="text-black font-Roboto font-bold text-lg md:text-xl">{label}</label>
                 <button
                     className="min-w-[300px] bg-white border border-black rounded-full px-4 py-3 text-left flex justify-between items-center cursor-pointer 
                     focus:outline-none text-gray font-Roboto font-bold focus:bg-bleuElectrique focus:text-white transition duration-200 linear"
