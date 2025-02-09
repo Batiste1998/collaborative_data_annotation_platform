@@ -11,7 +11,7 @@ const CreateProjectPage = () => {
     return(
         <div className="overflow-hidden w-screen">
             <Header/>
-            <div className="bg-bleuElectrique h-screen lg:h-[70vw] xl:h-screen">
+            <div className="bg-bleuElectrique h-[92vh] sm:h-screen lg:h-[70vw] xl:h-screen">
                 <div className="w-3/4 py-20 lg:py-28 xl:py-32 flex justify-evenly">
                     <h1 className="font-Gelasio text-6xl lg:text-7xl xl:text-8xl text-white w-5/6 md:w-3/6">Create a new project</h1>
                 </div>

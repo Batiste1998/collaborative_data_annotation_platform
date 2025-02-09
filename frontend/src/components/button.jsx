@@ -13,7 +13,7 @@ const Bouton = ({ variant, text, link }) => {
     return (
         <div>
             <a href={link}>
-                <button className={`${getBackgroundClass(variant)} border py-2 text-sm lg:text-base px-4 md:px-6 lg:px-8 rounded-full text-white font-bold font-Roboto transition duration-200 linear`}>
+                <button className={`${getBackgroundClass(variant)} border py-2 text-sm lg:text-base px-6 lg:px-8 rounded-full text-white font-bold font-Roboto transition duration-200 linear`}>
                     {text}
                 </button>
             </a>

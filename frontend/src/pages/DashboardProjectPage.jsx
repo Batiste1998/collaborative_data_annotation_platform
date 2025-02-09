@@ -14,12 +14,12 @@ const DashboardProjectPage = ({name, members, description}) => {
     return(
         <div className="overflow-hidden w-screen">
             <Header/>
-            <div className="bg-bleuElectrique h-screen">
-                <div className="w-full sm:w-3/4 py-14 flex items-center gap-5 flex-col">
-                    <h1 className="font-Gelasio text-6xl lg:text-7xl xl:text-8xl text-white w-full sm:w-4/6 xl:w-4/6 px-3 sm:px-0">Edit a new project</h1>
-                    <h2 className="font-Gelasio text-6xl lg:text-7xl xl:text-8xl line-clamp-1 text-white w-full sm:w-4/6 xl:w-4/6 px-3 sm:px-0">{name}</h2>
-                    <p className="font-Gelasio text-lg xl:text-xl text-white w-full sm:w-4/6 xl:w-4/6 px-3 sm:px-0">Le Lorem Ipsum est simplement du faux texte employé dans la composition et la mise en page.</p>
-                    <div className="w-full sm:w-4/6 xl:w-4/6 z-10 px-3 sm:px-0">
+            <div className="bg-bleuElectrique h-[92vh] sm:h-screen lg:h-[70vw] xl:h-screen">
+                <div className="w-full sm:w-3/4 py-14 flex items-center gap-5 flex-col px-3 sm:px-0">
+                    <h1 className="font-Gelasio text-6xl lg:text-7xl xl:text-8xl text-white w-full sm:w-4/6 xl:w-4/6">Edit a new project</h1>
+                    <h2 className="font-Gelasio text-6xl lg:text-7xl xl:text-8xl line-clamp-1 text-white w-full sm:w-4/6 xl:w-4/6">{name}</h2>
+                    <p className="font-Gelasio text-lg xl:text-xl text-white w-full sm:w-4/6 xl:w-4/6">Le Lorem Ipsum est simplement du faux texte employé dans la composition et la mise en page.</p>
+                    <div className="w-full sm:w-4/6 xl:w-4/6 z-10">
                         <ul className="flex gap-2 xl:gap-4 flex-wrap">
                         {members.map((member, index) => (
                             <li
