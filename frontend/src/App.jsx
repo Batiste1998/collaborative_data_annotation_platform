@@ -4,6 +4,7 @@ import RegistrerPage from './pages/auth/RegistrerPage'
 import CreateProjectPage from './pages/CreateProjectPage'
 import DashboardProjectPage from './pages/DashboardProjectPage'
 import AllProjects from './pages/AllProjects'
+import HomePage from './pages/HomePage'
 
 function App() {
   return (
@@ -17,7 +18,7 @@ function App() {
         <Route
           path="/"
           element={
-            <h1 className="text-3xl font-bold underline text-red-500">Hello World!</h1>
+            <HomePage />
           }
         />
       </Routes>
