@@ -5,6 +5,7 @@ const helmet = require('helmet')
 const rateLimit = require('express-rate-limit')
 const morgan = require('morgan')
 const accountsRouter = require('./routes/userRoutes')
+const projectRouter = require('./routes/projectRoutes')
 const { loginUser } = require('./controllers/userController')
 require('dotenv').config()
 
@@ -50,6 +51,7 @@ app.use((req, res, next) => {
 
 // Routes
 app.use('/api/users', accountsRouter)
+app.use('/api/projects', projectRouter)
 
 // Login route
 app.post('/api/login', async (req, res, next) => {
