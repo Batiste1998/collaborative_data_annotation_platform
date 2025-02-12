@@ -6,7 +6,7 @@ const rateLimit = require('express-rate-limit')
 const morgan = require('morgan')
 const accountsRouter = require('./routes/userRoutes')
 const projectRouter = require('./routes/projectRoutes')
-const { loginUser } = require('./controllers/userController')
+const authRouter = require('./routes/authRoutes')
 require('dotenv').config()
 
 // Environment variables validation
@@ -52,22 +52,7 @@ app.use((req, res, next) => {
 // Routes
 app.use('/api/users', accountsRouter)
 app.use('/api/projects', projectRouter)
-
-// Login route
-app.post('/api/login', async (req, res, next) => {
-  try {
-    const { email, password } = req.body
-    if (!email || !password) {
-      return res
-        .status(400)
-        .json({ message: 'Email and password are required' })
-    }
-    const result = await loginUser(email, password)
-    res.json(result)
-  } catch (error) {
-    next(error)
-  }
-})
+app.use('/api/auth', authRouter)
 
 // 404 handler
 app.use((req, res) => {
