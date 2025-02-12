@@ -1,9 +1,9 @@
 const express = require('express')
 const router = express.Router()
-const auth = require('../middlewares/auth')
+const { authenticateToken } = require('../middlewares/auth')
 const projectController = require('../controllers/projectController')
 
-router.use(auth)
+router.use(authenticateToken)
 
 router.post('/', projectController.createProject)
 router.get('/', projectController.getProjects)
