@@ -24,6 +24,30 @@ const getAllUsers = async (requestingUserId, role) => {
   }
 }
 
+const getManagersOnly = async () => {
+  try {
+    const managers = await User.find({ role: 'manager' }).select('-password')
+    if (!managers || managers.length === 0) {
+      throw new Error('No managers found')
+    }
+    return managers
+  } catch (error) {
+    throw new Error(`Error fetching managers: ${error.message}`)
+  }
+}
+
+const getAnnotatorsOnly = async () => {
+  try {
+    const annotators = await User.find({ role: 'annotator' }).select('-password')
+    if (!annotators || annotators.length === 0) {
+      throw new Error('No annotators found')
+    }
+    return annotators
+  } catch (error) {
+    throw new Error(`Error fetching annotators: ${error.message}`)
+  }
+}
+
 const getUserById = async (id, requestingUserId, role) => {
   try {
     const user = await User.findById(id).select('-password')
@@ -174,4 +198,6 @@ module.exports = {
   updateUser,
   deleteUser,
   loginUser,
+  getManagersOnly,
+  getAnnotatorsOnly
 }

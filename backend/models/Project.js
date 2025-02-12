@@ -29,7 +29,7 @@ const projectSchema = new mongoose.Schema({
       },
       role: {
         type: String,
-        enum: ['annotator', 'reviewer'],
+        enum: ['manager', 'annotator', 'reviewer'],
         default: 'annotator',
       },
     },

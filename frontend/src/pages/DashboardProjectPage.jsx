@@ -4,13 +4,13 @@ import Header from '../components/header'
 import Footer from '../components/footer'
 import Decoration from '../components/decoration'
 import Input from '../components/input'
-import Select from '../components/select'
 import Button from '../components/button'
 import Name from '../components/name'
 import Task from '../components/task'
-import Message from '../components/message'
-import { getProject, updateProject } from '../services/projectService'
-
+import { 
+    getProject, 
+    updateProject
+} from '../services/projectService'
 
 const DashboardProjectPage = () => {
     const { id } = useParams()
@@ -21,7 +21,14 @@ const DashboardProjectPage = () => {
     const [formData, setFormData] = useState({
         name: '',
         description: '',
+        type: 'image'
     })
+
+    const projectTypes = [
+        { value: 'image', label: 'Images' },
+        { value: 'text', label: 'Textes' },
+        { value: 'audio', label: 'Audio' }
+    ]
 
     useEffect(() => {
         const fetchProject = async () => {
@@ -31,9 +38,17 @@ const DashboardProjectPage = () => {
                 setFormData({
                     name: data.name,
                     description: data.description,
+                    type: data.type
                 })
             } catch (err) {
-                setError(err.message)
+                if (err.type === 'NOT_FOUND') {
+                    setError('Projet non trouvé')
+                } else if (err.type === 'AUTH_ERROR') {
+                    setError('Session expirée. Veuillez vous reconnecter.')
+                    // Rediriger vers la page de connexion si nécessaire
+                } else {
+                    setError(err.message)
+                }
             } finally {
                 setLoading(false)
             }
@@ -50,142 +65,198 @@ const DashboardProjectPage = () => {
     }
 
     const handleSubmit = async () => {
+        if (!formData.name || !formData.description) {
+            setError('Veuillez remplir tous les champs obligatoires')
+            return
+        }
+
         try {
             setLoading(true)
+            setError(null)
             await updateProject(id, formData)
             const updatedProject = await getProject(id)
             setProject(updatedProject)
             alert('Projet mis à jour avec succès')
             navigate('/allprojects')
         } catch (err) {
-            setError(err.message)
+            if (err.type === 'VALIDATION_ERROR') {
+                setError('Données invalides. Vérifiez les champs requis.')
+            } else if (err.type === 'AUTH_ERROR') {
+                setError('Session expirée. Veuillez vous reconnecter.')
+                // Rediriger vers la page de connexion si nécessaire
+            } else if (err.type === 'PERMISSION_ERROR') {
+                setError('Vous n&apos;avez pas les droits pour modifier ce projet.')
+            } else {
+                setError(err.message)
+            }
         } finally {
             setLoading(false)
         }
     }
 
-    if (loading) {
-        return (
-            <div className="flex items-center justify-center h-screen">
-                <div className="text-2xl">Chargement...</div>
-            </div>
-        )
+    const getTypeIcon = (type) => {
+        switch (type) {
+            case 'image': return '🖼️'
+            case 'text': return '📝'
+            case 'audio': return '🎵'
+            default: return '📁'
+        }
     }
 
-    if (error) {
-        return (
-            <div className="flex items-center justify-center h-screen">
-                <div className="text-xl text-red-500">{error}</div>
-            </div>
-        )
-    }
+    if (loading) return <div className="flex items-center justify-center h-screen"><div className="text-2xl">Chargement...</div></div>
+    if (error) return <div className="flex items-center justify-center h-screen"><div className="text-xl text-red-500">{error}</div></div>
+    if (!project) return <div className="flex items-center justify-center h-screen"><div className="text-xl">Projet non trouvé</div></div>
 
-    if (!project) {
-        return (
-            <div className="flex items-center justify-center h-screen">
-                <div className="text-xl">Projet non trouvé</div>
-            </div>
-        )
-    }
+    // Calcul des statistiques
+    const totalItems = project.dataset?.length || 0
+    const completedItems = project.dataset?.filter(item => item.status === 'reviewed').length || 0
+    const inProgressItems = project.dataset?.filter(item => ['in_progress', 'annotated'].includes(item.status)).length || 0
+    const progressPercentage = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0
 
     return(
         <div className="w-screen overflow-hidden">
             <Header/>
             <div className="bg-bleuElectrique h-[92vh] sm:h-screen lg:h-[70vw] xl:h-screen">
                 <div className="flex flex-col items-center w-full gap-5 px-3 sm:w-3/4 py-14 sm:px-0">
-                    <h1 className="w-full text-6xl text-white font-Gelasio lg:text-7xl xl:text-8xl sm:w-4/6 xl:w-4/6">Edit a new project</h1>
-                    <h2 className="w-full text-6xl text-white font-Gelasio lg:text-7xl xl:text-8xl line-clamp-1 sm:w-4/6 xl:w-4/6">{project.name}</h2>
+                    <div className="flex items-center gap-4">
+                        <span className="text-4xl" title={`Type: ${project.type}`}>{getTypeIcon(project.type)}</span>
+                        <h1 className="w-full text-6xl text-white font-Gelasio lg:text-7xl xl:text-8xl sm:w-4/6 xl:w-4/6">{project.name}</h1>
+                    </div>
                     <p className="w-full text-lg text-white font-Gelasio xl:text-xl sm:w-4/6 xl:w-4/6">{project.description}</p>
+                    
+                    {/* Statistiques */}
+                    <div className="grid grid-cols-3 gap-4 p-4 mt-4 rounded-lg bg-white/10">
+                        <div className="text-center text-white">
+                            <p className="text-2xl font-bold">{totalItems}</p>
+                            <p>Total</p>
+                        </div>
+                        <div className="text-center text-white">
+                            <p className="text-2xl font-bold">{inProgressItems}</p>
+                            <p>En cours</p>
+                        </div>
+                        <div className="text-center text-white">
+                            <p className="text-2xl font-bold">{completedItems}</p>
+                            <p>Terminé</p>
+                        </div>
+                    </div>
+
+                    {/* Barre de progression */}
+                    <div className="w-full sm:w-4/6 xl:w-4/6">
+                        <div className="flex justify-between mb-2 text-white">
+                            <span>Progression</span>
+                            <span>{progressPercentage}%</span>
+                        </div>
+                        <div className="w-full h-2 rounded-full bg-white/30">
+                            <div 
+                                className="h-full bg-white rounded-full"
+                                style={{ width: `${progressPercentage}%` }}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Collaborateurs */}
                     <div className="z-10 w-full sm:w-4/6 xl:w-4/6">
+                        <h3 className="mb-2 text-white">Collaborateurs</h3>
                         <ul className="flex flex-wrap gap-2 xl:gap-4">
-                        {project.collaborators.map((collab, index) => (
-                            <li
-                                key={index}>
-                                <Name name={collab.user.username}/>
-                            </li>
-                        ))}
+                            {project.collaborators.map((collab, index) => (
+                                <li key={index}>
+                                    <Name name={`${collab.user.username} (${collab.role})`}/>
+                                </li>
+                            ))}
                         </ul>
                     </div>
                 </div>
                 <Decoration className="absolute right-0"/>
             </div>
+
             {/* PROJECT's DATA */}
             <div className="bg-white h-fit gap-6 pt-12 pb-[3rem] md:pb-[5rem] xl:pb-[8rem] flex justify-center sm:justify-start lg:justify-evenly flex-wrap px-6 lg:px-0">
                 <div className="flex flex-col gap-8 mb-14 lg:mb-0">
-                    <Input 
-                        text="Project's name" 
-                        value={formData.name}
-                        onChange={(e) => handleInputChange('name', e.target.value)}
-                    />
-                    <Input 
-                        text="Project's description"
-                        value={formData.description}
-                        onChange={(e) => handleInputChange('description', e.target.value)}
-                    />
-                    <Select label="Project's memnbers" placeholder="Project's members" variant={"primary"} list={["Isabelle", "Nicolas", "Clément", "Virginie", "Batiste", "Julie"]}/>
-                    <div className='flex justify-start gap-3 sm:justify-end'>
+                    <div className="flex flex-col gap-6">
+                        <h2 className="text-2xl font-bold text-black font-Roboto">Informations du projet</h2>
+                        <Input 
+                            text="Nom du projet" 
+                            value={formData.name}
+                            onChange={(e) => handleInputChange('name', e.target.value)}
+                        />
+                        <Input 
+                            text="Description"
+                            value={formData.description}
+                            onChange={(e) => handleInputChange('description', e.target.value)}
+                        />
+                        <div className="flex flex-col gap-2">
+                            <label className="text-sm font-medium text-gray-700">Type de projet</label>
+                            <select 
+                                className="p-2 border rounded-md"
+                                value={formData.type}
+                                onChange={(e) => handleInputChange('type', e.target.value)}
+                            >
+                                {projectTypes.map(type => (
+                                    <option key={type.value} value={type.value}>
+                                        {type.label}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+
+                    {/* Note: Ces fonctionnalités seront implémentées plus tard */}
+                    <div className="flex flex-col gap-6">
+                        <h2 className="text-2xl font-bold text-black font-Roboto">Labels</h2>
+                        <p className="text-gray-600">
+                            La gestion des labels sera disponible prochainement.
+                        </p>
+                    </div>
+
+                    <div className="flex flex-col gap-6">
+                        <h2 className="text-2xl font-bold text-black font-Roboto">Dataset</h2>
+                        <p className="text-gray-600">
+                            L&apos;upload de fichiers sera disponible prochainement.
+                        </p>
+                    </div>
+
+                    {error && (
+                        <p className="mt-2 text-sm text-red-500">{error}</p>
+                    )}
+
+                    <div className="flex justify-start gap-3 sm:justify-end">
                         <Button 
                             variant="primary" 
-                            text={loading ? "Mise à jour..." : "Send data"}
+                            text={loading ? "Mise à jour..." : "Mettre à jour"}
                             onClick={handleSubmit}
                             disabled={loading}
                         />
-                        <Button 
-                            variant="secondary" 
-                            text="Import a file"
-                            disabled={loading}
-                        />
-                    </div>
-                </div>
-                <div className='flex flex-col gap-3 sm:gap-6 before:content-[""] before:absolute before:bg-violetBordure before:opacity-40 before:w-screen before:h-[125%] before:z-0 z-10 relative before:rounded-bl-3xl before:translate-y-[-3rem] max-w-[25rem] xl:max-w-[45rem]'>
-                    <h2 className="pl-8 mb-2 text-2xl font-bold text-black xl:pl-20 font-Roboto ">Current project data</h2>
-                    <p className="pl-8 text-xl text-black xl:pl-20 font-Roboto">{project.name}</p>
-                    <p className="pl-8 text-xl text-black xl:pl-20 font-Roboto">{project.description}</p>
-                    <div className="z-10 pl-8 xl:pl-20">
-                        <ul className="flex flex-wrap gap-3 sm:gap-4">
-                        {project.collaborators.map((collab, index) => (
-                            <li
-                                key={index}>
-                                <Name name={collab.user.username}/>
-                            </li>
-                        ))}
-                        </ul>
                     </div>
                 </div>
             </div>
+
             {/* TASKS */}
             <div className="bg-white h-fit gap-12 pt-12 pb-[3rem] lg:pb-[5rem] flex justify-start flex-col mx-auto w-full xl:w-9/12 px-4 sm:px-6 md:px-10 xl:px-0">
-                <h2 className="text-xl font-bold text-black font-Roboto">Tasks</h2>
-                <div className="flex flex-wrap w-full gap-10 lg:gap-16">
-                    <Task image="../../public/chat1.jpg" members={["Isabelle"]} finished/>
-                    <Task image="../../public/chat2.jpg" members={["Isabelle", "Jean"]} checked/>
-                    <Task image="../../public/chat3.jpg" members={["Batiste"]} finished checked/>
-                    <Task image="../../public/chat4.jpg" members={[]}/>
-                    <Task image="../../public/chat5.jpg" members={["Marie", "Clément", "Cathy"]}/>
-                    <Task image="../../public/chat6.jpg" members={["Romain"]}/>
+                <div className="flex items-center justify-between">
+                    <h2 className="text-xl font-bold text-black font-Roboto">Tâches</h2>
+                    <p className="text-gray-600">
+                        L&apos;export des annotations sera disponible prochainement.
+                    </p>
                 </div>
-                <Button variant="secondary" text="Export anonations"/>
+                <div className="flex flex-wrap w-full gap-10 lg:gap-16">
+                    {project.dataset?.map((item, index) => (
+                        <Task 
+                            key={index}
+                            image={item.fileUrl}
+                            members={item.assignedTo ? [item.assignedTo.username] : []}
+                            finished={item.status === 'reviewed'}
+                            checked={item.status === 'annotated'}
+                        />
+                    ))}
+                </div>
             </div>
+
             {/* CHAT */}
             <div className="bg-white h-fit gap-10 md:pt-12 pb-[5rem] xl:pb-[8rem] flex justify-start flex-col mx-auto w-full xl:w-9/12 px-4 sm:px-10 xl:px-0">
                 <h2 className="text-xl font-bold text-black font-Roboto">Chat</h2>
-                <div className="flex flex-col gap-4 h-[35rem] overflow-auto pb-5 scrollable-container">
-                    <Message member="Julie"/>
-                    <Message member="Julie"/>
-                    <Message member="Julie"/>
-                    <Message member="Julie"/>
-                    <Message member="Julie"/>
-                    <Message member="Julie"/>
-                    <Message member="Julie"/>
-                    <Message member="Julie"/>
-                </div>
-                <h3 className="text-xl font-bold text-black font-Roboto">Votre message</h3>
-                <div className="w-[95%] sm:w-[85%] xl:w-[75%] flex flex-col gap-8">
-                    <textarea className="bg-white w-full shadow-lg h-[15rem] mt-1 ml-1 p-4 sm:p-8 flex flex-col gap-4 rounded-3xl"/>
-                    <div className="flex justify-end w-full">
-                        <Button variant="primary" text="Envoyer"/>
-                    </div>
-                </div>
+                <p className="text-gray-600">
+                    Le système de chat sera disponible prochainement.
+                </p>
             </div>
             <Footer isRegistration={false}/>
         </div>

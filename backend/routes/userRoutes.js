@@ -7,6 +7,8 @@ const {
   createUser,
   updateUser,
   deleteUser,
+  getManagersOnly,
+  getAnnotatorsOnly
 } = require('../controllers/userController')
 const { authenticateToken, requireRole } = require('../middlewares/auth')
 const {
@@ -24,6 +26,26 @@ const validate = (req, res, next) => {
   }
   next()
 }
+
+// Get managers (admin only)
+router.get('/managers', authenticateToken, requireRole('admin'), async (req, res) => {
+  try {
+    const managers = await getManagersOnly()
+    res.json(managers)
+  } catch (error) {
+    res.status(400).json({ message: error.message })
+  }
+})
+
+// Get annotators (admin and managers)
+router.get('/annotators', authenticateToken, requireRole('admin', 'manager'), async (req, res) => {
+  try {
+    const annotators = await getAnnotatorsOnly()
+    res.json(annotators)
+  } catch (error) {
+    res.status(400).json({ message: error.message })
+  }
+})
 
 // Get all users (with role-based filtering)
 router.get('/', authenticateToken, async (req, res) => {
@@ -113,7 +135,6 @@ router.delete(
   }
 )
 
-// Admin route to create users with specific roles
 // Admin route to create users with specific roles
 router.post(
   '/admin/create',

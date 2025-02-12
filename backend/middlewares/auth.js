@@ -15,7 +15,7 @@ const authenticateToken = async (req, res, next) => {
     // Since we now include all necessary user info in the token,
     // we don't need to query the database again
     req.user = {
-      id: decoded.id,
+      _id: decoded.id,
       role: decoded.role,
       email: decoded.email,
       username: decoded.username,
