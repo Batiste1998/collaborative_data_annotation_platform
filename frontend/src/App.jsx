@@ -10,6 +10,7 @@ import ManagerDashboard from './pages/ManagerDashboard'
 import AnnotatorDashboard from './pages/AnnotatorDashboard'
 import AllProjects from './pages/AllProjects'
 import HomePage from './pages/HomePage'
+import ManageUsers from './pages/ManageUsers'
 import { useAuth } from './context/AuthContext'
 
 // Composant pour rediriger vers le bon dashboard en fonction du rôle
@@ -92,6 +93,14 @@ function App() {
             element={
               <RoleRoute allowedRoles={['admin', 'manager']}>
                 <AllProjects />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/users"
+            element={
+              <RoleRoute allowedRoles={['admin']}>
+                <ManageUsers />
               </RoleRoute>
             }
           />
