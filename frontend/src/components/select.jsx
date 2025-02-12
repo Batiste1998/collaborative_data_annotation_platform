@@ -1,30 +1,30 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react"
 
 const MultiSelect = ({ label, placeholder, list, variant }) => {
-    const [isOpen, setIsOpen] = useState(false);
-    const [selected, setSelected] = useState([]);
-    const selectRef = useRef(null);
+    const [isOpen, setIsOpen] = useState(false)
+    const [selected, setSelected] = useState([])
+    const selectRef = useRef(null)
 
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (selectRef.current && !selectRef.current.contains(event.target)) {
-                setIsOpen(false);
+                setIsOpen(false)
             }
-        };
+        }
 
-        document.addEventListener("mousedown", handleClickOutside);
+        document.addEventListener("mousedown", handleClickOutside)
         return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, []);
+            document.removeEventListener("mousedown", handleClickOutside)
+        }
+    }, [])
 
     const toggleSelection = (option) => {
         setSelected((prevSelected) =>
             prevSelected.includes(option)
                 ? prevSelected.filter((item) => item !== option)
                 : [...prevSelected, option]
-        );
-    };
+        )
+    }
 
     return (
         <div className="relative" ref={selectRef}>
@@ -61,7 +61,7 @@ const MultiSelect = ({ label, placeholder, list, variant }) => {
                 </ul>
             )}
         </div>
-    );
-};
+    )
+}
 
-export default MultiSelect;
+export default MultiSelect

@@ -6,7 +6,7 @@ const Message = ({member}) => {
             <Name name={member}/>
             <p className="text-black font-Roboto">Le Lorem Ipsum est simplement du faux texte employé dans la composition et la mise en page.</p>
         </div>
-    );
-};
+    )
+}
 
-export default Message;
+export default Message

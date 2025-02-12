@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
-import { getCurrentUser, isAuthenticated } from '../services/authService'
+import { getCurrentUser, isAuthenticated as checkAuthStatus } from '../services/authService'
 
 const AuthContext = createContext(null)
 
@@ -10,17 +10,25 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     // Vérifier l'authentification au chargement
-    if (isAuthenticated()) {
+    if (checkAuthStatus()) {
       setUser(getCurrentUser())
     }
     setLoading(false)
   }, [])
 
+  const isAuthenticated = () => !!user
+  const isAdmin = () => user?.role === 'admin'
+  const isManager = () => user?.role === 'manager'
+  const isAnnotator = () => user?.role === 'annotator'
+
   const value = {
     user,
     setUser,
     loading,
-    isAuthenticated: () => !!user,
+    isAuthenticated,
+    isAdmin,
+    isManager,
+    isAnnotator,
   }
 
   if (loading) {

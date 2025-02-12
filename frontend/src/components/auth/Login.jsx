@@ -1,19 +1,29 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { MOCK_USER } from '../../constants/userMock'
+import { login } from '../../services/authService'
+import { useAuth } from '../../context/AuthContext'
 
 const Login = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
+  const { setUser } = useAuth()
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    if (email === MOCK_USER.email && password === MOCK_USER.password) {
-      navigate('/dashboard')
-    } else {
-      setError('Invalid email or password')
+    setError('')
+    setLoading(true)
+
+    try {
+      const response = await login(email, password)
+      setUser(response.user)
+      navigate(response.redirectUrl)
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -57,9 +67,10 @@ const Login = () => {
           </div>
           <button
             type="submit"
-            className="w-full px-4 py-2 font-bold text-white bg-indigo-600 rounded hover:bg-indigo-700 focus:outline-none focus:ring focus:ring-indigo-200"
+            className="w-full px-4 py-2 font-bold text-white bg-indigo-600 rounded hover:bg-indigo-700 focus:outline-none focus:ring focus:ring-indigo-200 disabled:opacity-50"
+            disabled={loading}
           >
-            Login
+            {loading ? 'Connexion...' : 'Login'}
           </button>
         </form>
       </div>

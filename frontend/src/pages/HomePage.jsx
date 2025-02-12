@@ -3,8 +3,10 @@ import Footer from '../components/footer'
 import Decoration from '../components/decoration'
 import Button from '../components/button'
 import Project from '../components/project'
+import { useAuth } from '../context/AuthContext'
 
 const HomePage = () => {
+  const { isAuthenticated } = useAuth()
   const projects = [
     {
       name: "Cat's project",
@@ -74,10 +76,16 @@ const HomePage = () => {
           <p className="w-full text-lg text-white sm:w-4/6 xl:w-4/6 font-Gelasio xl:text-xl">
             Make the companies’daily easier
           </p>
-          <div className="flex flex-wrap justify-start w-full gap-8 sm:w-4/6 xl:w-4/6">
-            <Button variant="primary" text="Registration" link="/registrer" />
-            <Button variant="secondary" text="Connexion" link="/login" />
-          </div>
+          {!isAuthenticated() ? (
+            <div className="flex flex-wrap justify-start w-full gap-8 sm:w-4/6 xl:w-4/6">
+              <Button variant="primary" text="Registration" link="/registrer" />
+              <Button variant="secondary" text="Connexion" link="/login" />
+            </div>
+          ) : (
+            <div className="flex flex-wrap justify-start w-full gap-8 sm:w-4/6 xl:w-4/6">
+              <Button variant="primary" text="Accéder à mon espace" link="/dashboard" />
+            </div>
+          )}
         </div>
         <Decoration className="absolute right-0" />
       </div>
@@ -99,10 +107,12 @@ const HomePage = () => {
         </div>
       </div>
       {/* BUTTONS */}
-      <div className="flex justify-start sm:justify-center mb-[3rem] xl:mb-[5rem] gap-3 sm:gap-8 flex-wrap pl-8 sm:pl-0">
-        <Button variant="primary" text="See all projects" link="/allprojects" />
-        <Button variant="secondary" text="Create a project" link="/create" />
-      </div>
+      {isAuthenticated() && (
+        <div className="flex justify-start sm:justify-center mb-[3rem] xl:mb-[5rem] gap-3 sm:gap-8 flex-wrap pl-8 sm:pl-0">
+          <Button variant="primary" text="See all projects" link="/allprojects" />
+          <Button variant="secondary" text="Create a project" link="/create" />
+        </div>
+      )}
       <Footer isRegistration={false} />
     </div>
   )

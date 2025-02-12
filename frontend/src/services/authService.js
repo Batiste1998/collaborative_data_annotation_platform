@@ -10,7 +10,7 @@ export const login = async (email, password) => {
   })
 
   const data = await response.json()
-
+  
   if (!response.ok) {
     throw new Error(data.message || 'Erreur lors de la connexion')
   }
@@ -18,8 +18,10 @@ export const login = async (email, password) => {
   // Stocker le token dans le localStorage
   localStorage.setItem('token', data.token)
   localStorage.setItem('user', JSON.stringify(data.user))
-
-  return data
+  
+  // Retourner l'URL de redirection en fonction du rôle
+  const redirectUrl = getRedirectUrlByRole(data.user.role)
+  return { ...data, redirectUrl }
 }
 
 export const register = async (username, email, password) => {
@@ -32,11 +34,11 @@ export const register = async (username, email, password) => {
   })
 
   const data = await response.json()
-
+  
   if (!response.ok) {
-    throw new Error(data.message || "Erreur lors de l'inscription")
+    throw new Error(data.message || 'Erreur lors de l\'inscription')
   }
-
+  
   return data
 }
 
@@ -56,4 +58,17 @@ export const getToken = () => {
 
 export const isAuthenticated = () => {
   return !!getToken()
+}
+
+export const getRedirectUrlByRole = (role) => {
+  switch (role) {
+    case 'admin':
+      return '/admin-dashboard'
+    case 'manager':
+      return '/manager-dashboard'
+    case 'annotator':
+      return '/annotator-dashboard'
+    default:
+      return '/login'
+  }
 }

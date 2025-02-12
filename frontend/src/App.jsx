@@ -1,12 +1,36 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
-import PrivateRoute from './components/PrivateRoute'
+import RoleRoute from './components/RoleRoute'
 import LoginPage from './pages/auth/LoginPage'
 import RegistrerPage from './pages/auth/RegistrerPage'
 import CreateProjectPage from './pages/CreateProjectPage'
 import DashboardProjectPage from './pages/DashboardProjectPage'
+import AdminDashboard from './pages/AdminDashboard'
+import ManagerDashboard from './pages/ManagerDashboard'
+import AnnotatorDashboard from './pages/AnnotatorDashboard'
 import AllProjects from './pages/AllProjects'
 import HomePage from './pages/HomePage'
+import { useAuth } from './context/AuthContext'
+
+// Composant pour rediriger vers le bon dashboard en fonction du rôle
+const DashboardRedirect = () => {
+  const { user, isAuthenticated } = useAuth()
+  
+  if (!isAuthenticated()) {
+    return <Navigate to="/login" />
+  }
+
+  switch (user.role) {
+    case 'admin':
+      return <Navigate to="/admin-dashboard" />
+    case 'manager':
+      return <Navigate to="/manager-dashboard" />
+    case 'annotator':
+      return <Navigate to="/annotator-dashboard" />
+    default:
+      return <Navigate to="/login" />
+  }
+}
 
 function App() {
   return (
@@ -15,42 +39,62 @@ function App() {
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/registrer" element={<RegistrerPage />} />
+          <Route path="/" element={<HomePage />} />
+          
+          {/* Redirection vers le dashboard approprié */}
+          <Route path="/dashboard" element={<DashboardRedirect />} />
+          
+          {/* Routes spécifiques aux rôles */}
           <Route
-            path="/create"
+            path="/admin-dashboard"
             element={
-              <PrivateRoute>
-                <CreateProjectPage />
-              </PrivateRoute>
+              <RoleRoute allowedRoles={['admin']}>
+                <AdminDashboard />
+              </RoleRoute>
             }
           />
           <Route
-            path="/dashboard"
+            path="/manager-dashboard"
             element={
-              <PrivateRoute>
-                <DashboardProjectPage
-                  name="Cat's Data"
-                  description="Le Lorem Ipsum est simplement du faux texte employé dans la composition et la mise en page."
-                  members={[
-                    'Isabelle',
-                    'Nicolas',
-                    'Clément',
-                    'Virginie',
-                    'Batiste',
-                    'Julie',
-                  ]}
-                />
-              </PrivateRoute>
+              <RoleRoute allowedRoles={['manager']}>
+                <ManagerDashboard />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/annotator-dashboard"
+            element={
+              <RoleRoute allowedRoles={['annotator']}>
+                <AnnotatorDashboard />
+              </RoleRoute>
+            }
+          />
+          
+          {/* Routes protégées communes */}
+          <Route
+            path="/create"
+            element={
+              <RoleRoute allowedRoles={['admin', 'manager']}>
+                <CreateProjectPage />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="/dashboard/:id"
+            element={
+              <RoleRoute allowedRoles={['admin', 'manager', 'annotator']}>
+                <DashboardProjectPage />
+              </RoleRoute>
             }
           />
           <Route
             path="/allprojects"
             element={
-              <PrivateRoute>
+              <RoleRoute allowedRoles={['admin', 'manager']}>
                 <AllProjects />
-              </PrivateRoute>
+              </RoleRoute>
             }
           />
-          <Route path="/" element={<HomePage />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>
