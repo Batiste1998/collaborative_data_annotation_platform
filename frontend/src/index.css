@@ -1,3 +1,122 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+    font-family: "Gelasio";
+    src: url("./assets/fonts/Gelasio-Regular.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Roboto";
+    src: url("./assets/fonts/Roboto-Regular.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Roboto";
+    src: url("./assets/fonts/Roboto-Bold.ttf") format("truetype");
+    font-weight: 600;
+    font-style: bold;
+}
+
+.inputRegistration {
+    border: 1px solid white;
+    border-radius: 50rem;
+    background-color: transparent;
+    padding-inline: 12px;
+    padding-block: 8px;
+    width: 15.5rem;
+    color: white;
+    font-family: 'Roboto';
+    transition: all 150ms linear;
+}
+
+.inputRegistration:focus {
+    color: black;
+    background-color: white;
+    opacity: 70%;
+    outline: none;
+}
+
+.inputCreation {
+    border: 1px solid black;
+    border-radius: 50rem;
+    background-color: white;
+    padding-inline: 20px;
+    padding-block: 12px;
+    width: 500px;
+    transition: all 150ms linear;
+}
+
+.inputCreation::placeholder{
+    color:gray;
+    font-weight: bold;
+    font-family: 'Roboto';
+}
+
+.inputCreation:focus{
+    background-color: #3932FF;
+    opacity: 80%;
+    color: white;
+    outline: none;
+}
+
+.inputCreation:focus::placeholder {
+    color: white;
+}
+
+.scrollable-container {
+    height: 35rem;
+    overflow: auto;
+    padding-bottom: 1.25rem;
+}
+
+.scrollable-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.scrollable-container::-webkit-scrollbar-thumb {
+    background-color: #000000;
+    border-radius: 10px;
+}
+
+.scrollable-container::-webkit-scrollbar-track {
+    background-color: #F1F1F1;
+    border-radius: 10px;
+}
+
+@media (min-width: 320px) {
+    .inputRegistration {
+        padding-block: 4px;
+        width: 13.5rem;
+    }
+    .inputCreation {
+        width: 300px;
+    }
+}
+
+@media (min-width: 640px) {
+   .inputCreation {
+        width: 25rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .inputRegistration {
+        padding-block: 6px;
+        width: 15.5rem;
+    }
+    .inputCreation {
+        width: 500px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .inputRegistration {
+        padding-block: 8px;
+    }
+}
