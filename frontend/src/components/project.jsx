@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import PropTypes from 'prop-types'
+import { useAuth } from '../context/AuthContext'
 import Name from '../components/name'
 import Button from '../components/button'
 import { deleteProject } from '../services/projectService'
@@ -12,14 +13,16 @@ const Project = ({
   collaborators = [], 
   dataset = [], 
   labels = [],
-  img 
+  img,
+  owner
 }) => {
   const navigate = useNavigate()
+  const { user } = useAuth()
 
   // Calcul des statistiques
   const totalItems = dataset.length
-  const completedItems = dataset.filter(item => item.status === 'reviewed').length
-  const inProgressItems = dataset.filter(item => ['in_progress', 'annotated'].includes(item.status)).length
+  const completedItems = dataset.filter(item => item.status === 'annotated').length
+  const inProgressItems = dataset.filter(item => item.status === 'in_progress').length
   const progressPercentage = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0
 
   // Grouper les collaborateurs par rôle
@@ -29,6 +32,16 @@ const Project = ({
     acc[role].push(collab.user.username)
     return acc
   }, {})
+
+  // Vérifier les permissions de l'utilisateur
+  const canEditProject = () => {
+    if (!user) return false
+    if (user.role === 'admin') return true
+    if (user.role === 'manager' && collaborators.some(
+      c => c.user._id === user._id && c.role === 'manager'
+    )) return true
+    return owner?._id === user._id
+  }
 
   const getTypeIcon = (type) => {
     switch (type) {
@@ -106,6 +119,14 @@ const Project = ({
             </div>
           )}
 
+          {/* Propriétaire */}
+          {owner && (
+            <div>
+              <p className="mb-1 text-sm text-gray-600">Propriétaire</p>
+              <Name name={owner.username} />
+            </div>
+          )}
+
           {/* Collaborateurs par rôle */}
           {Object.entries(collaboratorsByRole).map(([role, users]) => (
             <div key={role}>
@@ -120,27 +141,29 @@ const Project = ({
             </div>
           ))}
 
-          <div className="flex gap-2 md:mt-2">
-            <Button 
-              variant="primary" 
-              text="Edit" 
-              onClick={() => navigate(`/dashboard/${id}`)}
-            />
-            <Button 
-              variant="secondary" 
-              text="Delete" 
-              onClick={async () => {
-                if (window.confirm('Êtes-vous sûr de vouloir supprimer ce projet ?')) {
-                  try {
-                    await deleteProject(id)
-                    window.location.reload()
-                  } catch (err) {
-                    alert(`Erreur lors de la suppression du projet : ${err.message}`)
+          {canEditProject() && (
+            <div className="flex gap-2 md:mt-2">
+              <Button 
+                variant="primary" 
+                text="Edit" 
+                onClick={() => navigate(`/dashboard/${id}`)}
+              />
+              <Button 
+                variant="secondary" 
+                text="Delete" 
+                onClick={async () => {
+                  if (window.confirm('Êtes-vous sûr de vouloir supprimer ce projet ?')) {
+                    try {
+                      await deleteProject(id)
+                      window.location.reload()
+                    } catch (err) {
+                      alert(`Erreur lors de la suppression du projet : ${err.message}`)
+                    }
                   }
-                }
-              }}
-            />
-          </div>
+                }}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -153,14 +176,19 @@ Project.propTypes = {
   name: PropTypes.string.isRequired,
   description: PropTypes.string.isRequired,
   img: PropTypes.string.isRequired,
+  owner: PropTypes.shape({
+    _id: PropTypes.string.isRequired,
+    username: PropTypes.string.isRequired
+  }),
   collaborators: PropTypes.arrayOf(PropTypes.shape({
     user: PropTypes.shape({
+      _id: PropTypes.string.isRequired,
       username: PropTypes.string.isRequired
     }),
-    role: PropTypes.oneOf(['annotator', 'reviewer'])
+    role: PropTypes.oneOf(['manager', 'annotator'])
   })),
   dataset: PropTypes.arrayOf(PropTypes.shape({
-    status: PropTypes.oneOf(['pending', 'in_progress', 'annotated', 'reviewed'])
+    status: PropTypes.oneOf(['pending', 'in_progress', 'annotated'])
   })),
   labels: PropTypes.arrayOf(PropTypes.shape({
     name: PropTypes.string.isRequired,

@@ -29,7 +29,7 @@ const projectSchema = new mongoose.Schema({
       },
       role: {
         type: String,
-        enum: ['manager', 'annotator', 'reviewer'],
+        enum: ['manager', 'annotator'],
         default: 'annotator',
       },
     },
@@ -46,7 +46,7 @@ const projectSchema = new mongoose.Schema({
       },
       status: {
         type: String,
-        enum: ['pending', 'in_progress', 'annotated', 'reviewed'],
+        enum: ['pending', 'in_progress', 'annotated'],
         default: 'pending',
       },
       assignedTo: {

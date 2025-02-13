@@ -85,10 +85,14 @@ const ManagerDashboard = () => {
                             <Project
                                 key={project._id}
                                 id={project._id}
-                                description={project.description}
+                                type={project.type}
                                 name={project.name}
-                                img={project.type === 'image' ? "../../public/chats.jpg" : "../../public/fruits.jpg"}
-                                members={project.collaborators.map(collab => collab.user.username)}
+                                description={project.description}
+                                img={project.type === 'image' ? "/chats.jpg" : project.type === 'audio' ? "/fruits.jpg" : "/fleurs.jpg"}
+                                owner={project.owner}
+                                collaborators={project.collaborators}
+                                dataset={project.dataset}
+                                labels={project.labels}
                             />
                         ))
                     )}
@@ -113,7 +117,7 @@ const ManagerDashboard = () => {
                             <p className="text-3xl font-bold text-roseBordure">
                                 {projects.reduce((acc, project) => 
                                     acc + project.dataset.filter(item => 
-                                        item.status === 'annotated' || item.status === 'reviewed'
+                                        item.status === 'annotated'
                                     ).length, 0
                                 )}
                             </p>

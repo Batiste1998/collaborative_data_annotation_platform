@@ -47,7 +47,7 @@ const AllProjects = () => {
 
     const getProjectStatus = (project) => {
         if (!project.dataset || project.dataset.length === 0) return 'empty'
-        const completedItems = project.dataset.filter(item => item.status === 'reviewed').length
+        const completedItems = project.dataset.filter(item => item.status === 'annotated').length
         const totalItems = project.dataset.length
         if (completedItems === totalItems) return 'completed'
         if (completedItems > 0) return 'in_progress'
@@ -162,7 +162,7 @@ const AllProjects = () => {
                                 type={project.type}
                                 name={project.name}
                                 description={project.description}
-                                img={project.type === 'image' ? "../../public/chats.jpg" : project.type === 'audio' ? "../../public/fruits.jpg" : "../../public/fleurs.jpg"}
+                                img={project.type === 'image' ? "/chats.jpg" : project.type === 'audio' ? "/fruits.jpg" : "/fleurs.jpg"}
                                 collaborators={project.collaborators}
                                 dataset={project.dataset || []}
                                 labels={project.labels || []}

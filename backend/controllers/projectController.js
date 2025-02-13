@@ -222,3 +222,101 @@ exports.removeCollaborator = async (req, res) => {
     res.status(400).json({ error: error.message })
   }
 }
+
+exports.updateDatasetStatus = async (req, res) => {
+  try {
+    const project = await Project.findById(req.params.id)
+      .populate('owner', 'username email')
+      .populate('collaborators.user', 'username email')
+
+    if (!project) {
+      return res.status(404).json({ error: 'Project not found' })
+    }
+
+    // Trouver l'élément du dataset
+    const datasetItem = project.dataset.id(req.params.itemId)
+    if (!datasetItem) {
+      return res.status(404).json({ error: 'Dataset item not found' })
+    }
+
+    // Vérifier que l'utilisateur est assigné à cet élément ou est manager/owner
+    const isOwner = project.owner._id.toString() === req.user._id
+    const isManager = project.collaborators.some(
+      c => c.user._id.toString() === req.user._id && c.role === 'manager'
+    )
+    const isAssigned = datasetItem.assignedTo?.toString() === req.user._id
+
+    if (!isOwner && !isManager && !isAssigned) {
+      return res.status(403).json({ error: 'Not authorized to update this item' })
+    }
+
+    // Les annotateurs ne peuvent mettre à jour que leurs propres tâches
+    if (!isOwner && !isManager && isAssigned) {
+      // Vérifier les transitions de statut autorisées pour les annotateurs
+      const allowedTransitions = {
+        'pending': ['in_progress'],
+        'in_progress': ['annotated'],
+        'annotated': ['in_progress']
+      }
+
+      if (!allowedTransitions[datasetItem.status]?.includes(req.body.status)) {
+        return res.status(400).json({ error: 'Invalid status transition' })
+      }
+    }
+
+    datasetItem.status = req.body.status
+    await project.save()
+
+    res.json(project)
+  } catch (error) {
+    res.status(400).json({ error: error.message })
+  }
+}
+
+exports.assignDatasetItem = async (req, res) => {
+  try {
+    const project = await Project.findById(req.params.id)
+      .populate('owner', 'username email')
+      .populate('collaborators.user', 'username email')
+
+    if (!project) {
+      return res.status(404).json({ error: 'Project not found' })
+    }
+
+    // Vérifier les permissions
+    const isOwner = project.owner._id.toString() === req.user._id
+    const isManager = project.collaborators.some(
+      c => c.user._id.toString() === req.user._id && c.role === 'manager'
+    )
+
+    if (!isOwner && !isManager) {
+      return res.status(403).json({ error: 'Not authorized to assign tasks' })
+    }
+
+    // Vérifier que l'utilisateur à assigner est un annotateur du projet
+    const isAnnotator = project.collaborators.some(
+      c => c.user._id.toString() === req.body.userId && c.role === 'annotator'
+    )
+
+    if (!isAnnotator) {
+      return res.status(400).json({ error: 'User must be an annotator of this project' })
+    }
+
+    // Trouver et mettre à jour l'élément du dataset
+    const datasetItem = project.dataset.id(req.params.itemId)
+    if (!datasetItem) {
+      return res.status(404).json({ error: 'Dataset item not found' })
+    }
+
+    datasetItem.assignedTo = req.body.userId
+    if (datasetItem.status === 'pending') {
+      datasetItem.status = 'in_progress'
+    }
+
+    await project.save()
+
+    res.json(project)
+  } catch (error) {
+    res.status(400).json({ error: error.message })
+  }
+}

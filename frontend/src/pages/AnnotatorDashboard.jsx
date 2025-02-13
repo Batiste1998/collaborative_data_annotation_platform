@@ -15,10 +15,10 @@ const AnnotatorDashboard = () => {
         const fetchProjects = async () => {
             try {
                 const data = await getAllProjects()
-                // Filtrer les projets où l&apos;utilisateur est annotateur
+                // Filtrer les projets où l'utilisateur est annotateur
                 const annotatorProjects = data.filter(project => 
                     project.collaborators.some(collab => 
-                        collab.user._id === user.id && collab.role === "annotator"
+                        collab.user._id === user.id && collab.role === 'annotator'
                     )
                 )
                 setProjects(annotatorProjects)
@@ -72,10 +72,14 @@ const AnnotatorDashboard = () => {
                             <Project
                                 key={project._id}
                                 id={project._id}
-                                description={project.description}
+                                type={project.type}
                                 name={project.name}
-                                img={project.type === "image" ? "../../public/chats.jpg" : "../../public/fruits.jpg"}
-                                members={project.collaborators.map(collab => collab.user.username)}
+                                description={project.description}
+                                img={project.type === 'image' ? '/chats.jpg' : project.type === 'audio' ? '/fruits.jpg' : '/fleurs.jpg'}
+                                owner={project.owner}
+                                collaborators={project.collaborators}
+                                dataset={project.dataset}
+                                labels={project.labels}
                             />
                         ))
                     )}
@@ -90,7 +94,7 @@ const AnnotatorDashboard = () => {
                             <p className="text-3xl font-bold text-bleuElectrique">
                                 {projects.reduce((acc, project) => 
                                     acc + project.dataset.filter(item => 
-                                        item.status === "in_progress" && 
+                                        item.status === 'in_progress' && 
                                         item.assignedTo === user.id
                                     ).length, 0
                                 )}
@@ -101,7 +105,7 @@ const AnnotatorDashboard = () => {
                             <p className="text-3xl font-bold text-roseBordure">
                                 {projects.reduce((acc, project) => 
                                     acc + project.dataset.filter(item => 
-                                        (item.status === "annotated" || item.status === "reviewed") && 
+                                        item.status === 'annotated' && 
                                         item.assignedTo === user.id
                                     ).length, 0
                                 )}

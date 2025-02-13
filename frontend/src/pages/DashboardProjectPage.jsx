@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 import Header from '../components/header'
 import Footer from '../components/footer'
 import Decoration from '../components/decoration'
@@ -15,6 +16,7 @@ import {
 const DashboardProjectPage = () => {
     const { id } = useParams()
     const navigate = useNavigate()
+    const { user } = useAuth()
     const [project, setProject] = useState(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
@@ -83,9 +85,8 @@ const DashboardProjectPage = () => {
                 setError('Données invalides. Vérifiez les champs requis.')
             } else if (err.type === 'AUTH_ERROR') {
                 setError('Session expirée. Veuillez vous reconnecter.')
-                // Rediriger vers la page de connexion si nécessaire
             } else if (err.type === 'PERMISSION_ERROR') {
-                setError('Vous n&apos;avez pas les droits pour modifier ce projet.')
+                setError('Vous n\'avez pas les droits pour modifier ce projet.')
             } else {
                 setError(err.message)
             }
@@ -103,14 +104,24 @@ const DashboardProjectPage = () => {
         }
     }
 
+    // Vérifie si l'utilisateur peut modifier le projet
+    const canEditProject = () => {
+        if (!project || !user) return false
+        if (user.role === 'admin') return true
+        if (user.role === 'manager' && project.collaborators.some(
+            c => c.user._id === user._id && c.role === 'manager'
+        )) return true
+        return project.owner._id === user._id
+    }
+
     if (loading) return <div className="flex items-center justify-center h-screen"><div className="text-2xl">Chargement...</div></div>
     if (error) return <div className="flex items-center justify-center h-screen"><div className="text-xl text-red-500">{error}</div></div>
     if (!project) return <div className="flex items-center justify-center h-screen"><div className="text-xl">Projet non trouvé</div></div>
 
     // Calcul des statistiques
     const totalItems = project.dataset?.length || 0
-    const completedItems = project.dataset?.filter(item => item.status === 'reviewed').length || 0
-    const inProgressItems = project.dataset?.filter(item => ['in_progress', 'annotated'].includes(item.status)).length || 0
+    const completedItems = project.dataset?.filter(item => item.status === 'annotated').length || 0
+    const inProgressItems = project.dataset?.filter(item => item.status === 'in_progress').length || 0
     const progressPercentage = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0
 
     return(
@@ -157,78 +168,87 @@ const DashboardProjectPage = () => {
                     {/* Collaborateurs */}
                     <div className="z-10 w-full sm:w-4/6 xl:w-4/6">
                         <h3 className="mb-2 text-white">Collaborateurs</h3>
-                        <ul className="flex flex-wrap gap-2 xl:gap-4">
-                            {project.collaborators.map((collab, index) => (
-                                <li key={index}>
-                                    <Name name={`${collab.user.username} (${collab.role})`}/>
-                                </li>
-                            ))}
-                        </ul>
+                        <div className="flex flex-col gap-2">
+                            <div className="flex items-center gap-2">
+                                <span className="text-white">Propriétaire:</span>
+                                <Name name={project.owner.username} />
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                                {project.collaborators.map((collab, index) => (
+                                    <Name 
+                                        key={index}
+                                        name={`${collab.user.username} (${collab.role})`}
+                                    />
+                                ))}
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <Decoration className="absolute right-0"/>
             </div>
 
             {/* PROJECT's DATA */}
-            <div className="bg-white h-fit gap-6 pt-12 pb-[3rem] md:pb-[5rem] xl:pb-[8rem] flex justify-center sm:justify-start lg:justify-evenly flex-wrap px-6 lg:px-0">
-                <div className="flex flex-col gap-8 mb-14 lg:mb-0">
-                    <div className="flex flex-col gap-6">
-                        <h2 className="text-2xl font-bold text-black font-Roboto">Informations du projet</h2>
-                        <Input 
-                            text="Nom du projet" 
-                            value={formData.name}
-                            onChange={(e) => handleInputChange('name', e.target.value)}
-                        />
-                        <Input 
-                            text="Description"
-                            value={formData.description}
-                            onChange={(e) => handleInputChange('description', e.target.value)}
-                        />
-                        <div className="flex flex-col gap-2">
-                            <label className="text-sm font-medium text-gray-700">Type de projet</label>
-                            <select 
-                                className="p-2 border rounded-md"
-                                value={formData.type}
-                                onChange={(e) => handleInputChange('type', e.target.value)}
-                            >
-                                {projectTypes.map(type => (
-                                    <option key={type.value} value={type.value}>
-                                        {type.label}
-                                    </option>
-                                ))}
-                            </select>
+            {canEditProject() && (
+                <div className="bg-white h-fit gap-6 pt-12 pb-[3rem] md:pb-[5rem] xl:pb-[8rem] flex justify-center sm:justify-start lg:justify-evenly flex-wrap px-6 lg:px-0">
+                    <div className="flex flex-col gap-8 mb-14 lg:mb-0">
+                        <div className="flex flex-col gap-6">
+                            <h2 className="text-2xl font-bold text-black font-Roboto">Informations du projet</h2>
+                            <Input 
+                                text="Nom du projet" 
+                                value={formData.name}
+                                onChange={(e) => handleInputChange('name', e.target.value)}
+                            />
+                            <Input 
+                                text="Description"
+                                value={formData.description}
+                                onChange={(e) => handleInputChange('description', e.target.value)}
+                            />
+                            <div className="flex flex-col gap-2">
+                                <label className="text-sm font-medium text-gray-700">Type de projet</label>
+                                <select 
+                                    className="p-2 border rounded-md"
+                                    value={formData.type}
+                                    onChange={(e) => handleInputChange('type', e.target.value)}
+                                >
+                                    {projectTypes.map(type => (
+                                        <option key={type.value} value={type.value}>
+                                            {type.label}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
+
+                        {/* Note: Ces fonctionnalités seront implémentées plus tard */}
+                        <div className="flex flex-col gap-6">
+                            <h2 className="text-2xl font-bold text-black font-Roboto">Labels</h2>
+                            <p className="text-gray-600">
+                                La gestion des labels sera disponible prochainement.
+                            </p>
+                        </div>
+
+                        <div className="flex flex-col gap-6">
+                            <h2 className="text-2xl font-bold text-black font-Roboto">Dataset</h2>
+                            <p className="text-gray-600">
+                                L&apos;upload de fichiers sera disponible prochainement.
+                            </p>
+                        </div>
+
+                        {error && (
+                            <p className="mt-2 text-sm text-red-500">{error}</p>
+                        )}
+
+                        <div className="flex justify-start gap-3 sm:justify-end">
+                            <Button 
+                                variant="primary" 
+                                text={loading ? "Mise à jour..." : "Mettre à jour"}
+                                onClick={handleSubmit}
+                                disabled={loading}
+                            />
                         </div>
                     </div>
-
-                    {/* Note: Ces fonctionnalités seront implémentées plus tard */}
-                    <div className="flex flex-col gap-6">
-                        <h2 className="text-2xl font-bold text-black font-Roboto">Labels</h2>
-                        <p className="text-gray-600">
-                            La gestion des labels sera disponible prochainement.
-                        </p>
-                    </div>
-
-                    <div className="flex flex-col gap-6">
-                        <h2 className="text-2xl font-bold text-black font-Roboto">Dataset</h2>
-                        <p className="text-gray-600">
-                            L&apos;upload de fichiers sera disponible prochainement.
-                        </p>
-                    </div>
-
-                    {error && (
-                        <p className="mt-2 text-sm text-red-500">{error}</p>
-                    )}
-
-                    <div className="flex justify-start gap-3 sm:justify-end">
-                        <Button 
-                            variant="primary" 
-                            text={loading ? "Mise à jour..." : "Mettre à jour"}
-                            onClick={handleSubmit}
-                            disabled={loading}
-                        />
-                    </div>
                 </div>
-            </div>
+            )}
 
             {/* TASKS */}
             <div className="bg-white h-fit gap-12 pt-12 pb-[3rem] lg:pb-[5rem] flex justify-start flex-col mx-auto w-full xl:w-9/12 px-4 sm:px-6 md:px-10 xl:px-0">
@@ -244,8 +264,8 @@ const DashboardProjectPage = () => {
                             key={index}
                             image={item.fileUrl}
                             members={item.assignedTo ? [item.assignedTo.username] : []}
-                            finished={item.status === 'reviewed'}
-                            checked={item.status === 'annotated'}
+                            finished={item.status === 'annotated'}
+                            checked={item.status === 'in_progress'}
                         />
                     ))}
                 </div>

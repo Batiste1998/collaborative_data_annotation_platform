@@ -82,11 +82,6 @@ const CreateProjectPage = () => {
             return
         }
 
-        if (user.role === 'admin' && !formData.manager) {
-            setError('Veuillez sélectionner un manager pour le projet')
-            return
-        }
-
         setLoading(true)
         setError(null)
 
@@ -99,7 +94,7 @@ const CreateProjectPage = () => {
                 labels
             })
 
-            // Si admin, ajouter le manager
+            // Si admin et un manager est sélectionné, l'ajouter
             if (user.role === 'admin' && formData.manager) {
                 await addCollaborator(project._id, formData.manager, 'manager')
             }
@@ -217,14 +212,17 @@ const CreateProjectPage = () => {
                         </p>
                     </div>
 
-                    {/* Gestion des collaborateurs */}
+                    {/* Gestion des collaborateurs 
+                        - Admin : peut assigner un manager et/ou des annotateurs
+                        - Manager : peut uniquement assigner des annotateurs
+                    */}
                     <div className="flex flex-col gap-6">
                         <h2 className="text-2xl font-bold text-black font-Roboto">Collaborateurs</h2>
                         
                         {/* Sélection du manager (admin uniquement) */}
                         {user.role === 'admin' && (
                             <div className="flex flex-col gap-2">
-                                <label className="text-sm font-medium text-gray-700">Manager du projet</label>
+                                <label className="text-sm font-medium text-gray-700">Manager du projet (optionnel)</label>
                                 <select 
                                     className="p-2 border rounded-md"
                                     value={formData.manager}
@@ -237,10 +235,13 @@ const CreateProjectPage = () => {
                                         </option>
                                     ))}
                                 </select>
+                                <p className="text-sm text-gray-500">
+                                    En tant qu&apos;admin, vous pouvez assigner un manager et/ou des annotateurs directement
+                                </p>
                             </div>
                         )}
 
-                        {/* Sélection des annotateurs */}
+                        {/* Sélection des annotateurs (disponible pour admin et manager) */}
                         <div className="flex flex-col gap-2">
                             <label className="text-sm font-medium text-gray-700">Annotateurs</label>
                             <div className="flex flex-wrap gap-2">
