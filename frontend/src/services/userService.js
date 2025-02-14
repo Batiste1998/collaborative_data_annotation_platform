@@ -3,23 +3,42 @@ const API_URL = 'http://localhost:5000/api'
 // Fonction utilitaire pour les requêtes authentifiées
 const authFetch = async (endpoint, options = {}) => {
   const token = localStorage.getItem('token')
-  const headers = {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${token}`,
-    ...options.headers,
+  
+  if (!token) {
+    throw new Error('Non authentifié')
   }
 
-  const response = await fetch(`${API_URL}${endpoint}`, {
-    ...options,
-    headers,
-  })
+  try {
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+      ...options.headers,
+    }
 
-  const data = await response.json()
-  if (!response.ok) {
-    throw new Error(data.message || 'Une erreur est survenue')
+    const response = await fetch(`${API_URL}${endpoint}`, {
+      ...options,
+      headers,
+    })
+
+    const data = await response.json()
+    
+    if (!response.ok) {
+      // Si le token est invalide ou expiré
+      if (response.status === 401) {
+        localStorage.removeItem('token')
+        localStorage.removeItem('user')
+        throw new Error('Session expirée, veuillez vous reconnecter')
+      }
+      throw new Error(data.message || 'Une erreur est survenue')
+    }
+
+    return data
+  } catch (error) {
+    if (error.message === 'Failed to fetch') {
+      throw new Error('Impossible de contacter le serveur')
+    }
+    throw error
   }
-
-  return data
 }
 
 export const getAllUsers = async () => {
@@ -37,37 +56,14 @@ export const getAnnotators = async () => {
 }
 
 export const updateUserRole = async (userId, role) => {
-  const token = localStorage.getItem('token')
-  const response = await fetch(`${API_URL}/users/${userId}`, {
+  return authFetch(`/users/${userId}`, {
     method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`,
-    },
     body: JSON.stringify({ role }),
   })
-
-  const data = await response.json()
-  if (!response.ok) {
-    throw new Error(data.message || 'Erreur lors de la modification du rôle')
-  }
-
-  return data
 }
 
 export const deleteUser = async (userId) => {
-  const token = localStorage.getItem('token')
-  const response = await fetch(`${API_URL}/users/${userId}`, {
+  return authFetch(`/users/${userId}`, {
     method: 'DELETE',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-    },
   })
-
-  const data = await response.json()
-  if (!response.ok) {
-    throw new Error(data.message || 'Erreur lors de la suppression de l\'utilisateur')
-  }
-
-  return data
 }

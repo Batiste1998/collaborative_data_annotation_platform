@@ -3,10 +3,10 @@ import { useNavigate } from "react-router-dom"
 import Header from "../components/header"
 import Footer from "../components/footer"
 import Button from "../components/button"
-import { getAllUsers, updateUserRole, deleteUser } from "../services/userService"
+import { getAnnotators, deleteUser } from "../services/userService"
 import { getCurrentUser } from "../services/authService"
 
-const ManageUsers = () => {
+const ManageAnnotators = () => {
     const navigate = useNavigate()
     const [users, setUsers] = useState([])
     const [loading, setLoading] = useState(true)
@@ -17,13 +17,13 @@ const ManageUsers = () => {
     useEffect(() => {
         const initializeComponent = async () => {
             try {
-                // Vérifier si l'utilisateur est admin
-                if (!currentUser || currentUser.role !== "admin") {
+                // Vérifier si l'utilisateur est manager
+                if (!currentUser || currentUser.role !== "manager") {
                     navigate("/")
                     return
                 }
 
-                await fetchUsers()
+                await fetchAnnotators()
             } catch (err) {
                 setError("Erreur lors de l'initialisation : " + err.message)
                 setLoading(false)
@@ -33,27 +33,15 @@ const ManageUsers = () => {
         initializeComponent()
     }, [navigate])
 
-    const fetchUsers = async () => {
+    const fetchAnnotators = async () => {
         try {
-            const data = await getAllUsers()
+            const data = await getAnnotators()
             setUsers(data)
             setError(null)
         } catch (err) {
             setError(err.message)
         } finally {
             setLoading(false)
-        }
-    }
-
-    const handleRoleChange = async (userId, newRole) => {
-        try {
-            await updateUserRole(userId, newRole)
-            setSuccessMessage("Rôle mis à jour avec succès")
-            fetchUsers() // Rafraîchir la liste
-            setTimeout(() => setSuccessMessage(""), 3000)
-        } catch (err) {
-            setError(err.message)
-            setTimeout(() => setError(null), 3000)
         }
     }
 
@@ -65,7 +53,7 @@ const ManageUsers = () => {
         try {
             await deleteUser(userId)
             setSuccessMessage("Utilisateur supprimé avec succès")
-            fetchUsers() // Rafraîchir la liste
+            fetchAnnotators() // Rafraîchir la liste
             setTimeout(() => setSuccessMessage(""), 3000)
         } catch (err) {
             setError(err.message)
@@ -88,9 +76,9 @@ const ManageUsers = () => {
                 <div className="w-full px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <div className="sm:flex sm:items-center">
                         <div className="sm:flex-auto">
-                            <h1 className="text-3xl font-semibold text-gray-900">Gestion des Utilisateurs</h1>
+                            <h1 className="text-3xl font-semibold text-gray-900">Gestion des Annotateurs</h1>
                             <p className="mt-2 text-sm text-gray-700">
-                                Liste de tous les utilisateurs avec leurs rôles
+                                Liste des annotateurs que vous gérez
                             </p>
                         </div>
                     </div>
@@ -118,9 +106,6 @@ const ManageUsers = () => {
                                         Email
                                     </th>
                                     <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                                        Rôle
-                                    </th>
-                                    <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                                         Actions
                                     </th>
                                 </tr>
@@ -135,23 +120,10 @@ const ManageUsers = () => {
                                             {user.email}
                                         </td>
                                         <td className="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
-                                            <select
-                                                value={user.role}
-                                                onChange={(e) => handleRoleChange(user._id, e.target.value)}
-                                                className="block w-full px-3 py-2 text-base border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                                disabled={user._id === (currentUser._id || currentUser.id)}
-                                            >
-                                                <option value="admin">Admin</option>
-                                                <option value="manager">Manager</option>
-                                                <option value="annotator">Annotator</option>
-                                            </select>
-                                        </td>
-                                        <td className="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
                                             <Button
                                                 variant="danger"
                                                 text="Supprimer"
                                                 onClick={() => handleDeleteUser(user._id)}
-                                                disabled={user._id === (currentUser._id || currentUser.id)}
                                             />
                                         </td>
                                     </tr>
@@ -166,4 +138,4 @@ const ManageUsers = () => {
     )
 }
 
-export default ManageUsers
+export default ManageAnnotators
