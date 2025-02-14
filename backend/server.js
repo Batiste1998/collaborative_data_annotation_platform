@@ -7,6 +7,7 @@ const morgan = require('morgan')
 const accountsRouter = require('./routes/userRoutes')
 const projectRouter = require('./routes/projectRoutes')
 const authRouter = require('./routes/authRoutes')
+const taskRouter = require('./routes/taskRoutes')
 require('dotenv').config()
 
 // Environment variables validation
@@ -23,10 +24,10 @@ const app = express()
 const PORT = process.env.PORT || 3000
 const MONGODB_URI = process.env.MONGODB_URI
 
-// Rate limiting
+// Rate limiting - Augmenté pour les tests
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10000, // Augmenté à 10000 requêtes
   message: 'Too many requests from this IP, please try again later.',
 })
 
@@ -53,6 +54,7 @@ app.use((req, res, next) => {
 app.use('/api/users', accountsRouter)
 app.use('/api/projects', projectRouter)
 app.use('/api/auth', authRouter)
+app.use('/api', taskRouter)
 
 // 404 handler
 app.use((req, res) => {

@@ -12,6 +12,10 @@ import {
     getProject, 
     updateProject
 } from '../services/projectService'
+import { 
+    updateTaskStatus,
+    deleteTask
+} from '../services/taskService'
 
 const DashboardProjectPage = () => {
     const { id } = useParams()
@@ -64,6 +68,43 @@ const DashboardProjectPage = () => {
             ...prev,
             [name]: value
         }))
+    }
+
+    const handleStatusChange = async (taskId, newStatus) => {
+        try {
+            await updateTaskStatus(taskId, newStatus)
+            // Recharger le projet pour avoir les données à jour
+            const updatedProject = await getProject(id)
+            setProject(updatedProject)
+        } catch (err) {
+            setError(err.message)
+        }
+    }
+
+    const handleAssign = async (taskId, userId) => {
+        try {
+            await updateTaskStatus(taskId, { assignedTo: userId })
+            const updatedProject = await getProject(id)
+            setProject(updatedProject)
+        } catch (err) {
+            setError(err.message)
+        }
+    }
+
+    const handleEdit = (taskId) => {
+        navigate(`/projects/${id}/tasks/${taskId}/edit`)
+    }
+
+    const handleDelete = async (taskId) => {
+        if (window.confirm('Êtes-vous sûr de vouloir supprimer cette tâche ?')) {
+            try {
+                await deleteTask(taskId)
+                const updatedProject = await getProject(id)
+                setProject(updatedProject)
+            } catch (err) {
+                setError(err.message)
+            }
+        }
     }
 
     const handleSubmit = async () => {
@@ -254,20 +295,42 @@ const DashboardProjectPage = () => {
             <div className="bg-white h-fit gap-12 pt-12 pb-[3rem] lg:pb-[5rem] flex justify-start flex-col mx-auto w-full xl:w-9/12 px-4 sm:px-6 md:px-10 xl:px-0">
                 <div className="flex items-center justify-between">
                     <h2 className="text-xl font-bold text-black font-Roboto">Tâches</h2>
-                    <p className="text-gray-600">
-                        L&apos;export des annotations sera disponible prochainement.
-                    </p>
+                    <div className="flex gap-4">
+                        {(user.role === 'admin' || user.role === 'manager') && (
+                    <Button
+                        variant="primary"
+                        text="Gérer les tâches"
+                        onClick={() => navigate(`/projects/${id}/tasks`)}
+                    />
+                )}
+                <Button
+                    variant="secondary"
+                    text="Voir les tâches"
+                    onClick={() => navigate(`/projects/${id}/tasks`)}
+                />
+                    </div>
                 </div>
                 <div className="flex flex-wrap w-full gap-10 lg:gap-16">
                     {project.dataset?.map((item, index) => (
                         <Task 
                             key={index}
-                            image={item.fileUrl}
-                            members={item.assignedTo ? [item.assignedTo.username] : []}
-                            finished={item.status === 'annotated'}
-                            checked={item.status === 'in_progress'}
+                            title={`Tâche ${index + 1}`}
+                            description={`Annotation de ${item.fileName}`}
+                            assignedTo={item.assignedTo?.username}
+                            dueDate={new Date().toISOString()} // À remplacer par la vraie date d'échéance
+                            priority="medium"
+                            status={item.status}
+                            onStatusChange={(newStatus) => handleStatusChange(item._id, newStatus)}
+                            onAssign={(userId) => handleAssign(item._id, userId)}
+                            onEdit={() => handleEdit(item._id)}
+                            onDelete={() => handleDelete(item._id)}
                         />
                     ))}
+                    {project.dataset?.length === 0 && (
+                        <p className="text-gray-600">
+                            Aucune tâche n&apos;a encore été créée pour ce projet.
+                        </p>
+                    )}
                 </div>
             </div>
 

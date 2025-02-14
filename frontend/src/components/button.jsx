@@ -13,6 +13,8 @@ const Button = ({
                 return `bg-roseFond border-roseBordure ${!disabled && 'hover:bg-roseBordure hover:border-roseFond'}`
             case 'secondary':
                 return `bg-violetFond border-violetBordure ${!disabled && 'hover:bg-violetBordure hover:border-violetFond'}`
+            case 'danger':
+                return `bg-red-500 border-red-600 ${!disabled && 'hover:bg-red-600 hover:border-red-500'}`
             default:
                 return `bg-roseFond border-roseBordure ${!disabled && 'hover:bg-roseBordure hover:border-roseFond'}`
         }
@@ -42,7 +44,7 @@ const Button = ({
 }
 
 Button.propTypes = {
-    variant: PropTypes.oneOf(['primary', 'secondary']).isRequired,
+    variant: PropTypes.oneOf(['primary', 'secondary', 'danger']).isRequired,
     text: PropTypes.string.isRequired,
     link: PropTypes.string,
     onClick: PropTypes.func,

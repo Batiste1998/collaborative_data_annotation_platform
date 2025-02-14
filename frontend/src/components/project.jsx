@@ -141,16 +141,21 @@ const Project = ({
             </div>
           ))}
 
-          {canEditProject() && (
-            <div className="flex gap-2 md:mt-2">
+          <div className="flex flex-wrap gap-2 md:mt-2">
+            <Button 
+              variant="primary" 
+              text="Gérer les tâches"
+              onClick={() => navigate(`/projects/${id}/tasks`)}
+            />
+            <Button 
+              variant="secondary" 
+              text="Voir le projet" 
+              onClick={() => navigate(`/dashboard/${id}`)}
+            />
+            {canEditProject() && (
               <Button 
-                variant="primary" 
-                text="Edit" 
-                onClick={() => navigate(`/dashboard/${id}`)}
-              />
-              <Button 
-                variant="secondary" 
-                text="Delete" 
+                variant="danger" 
+                text="Supprimer" 
                 onClick={async () => {
                   if (window.confirm('Êtes-vous sûr de vouloir supprimer ce projet ?')) {
                     try {
@@ -162,8 +167,8 @@ const Project = ({
                   }
                 }}
               />
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
     </div>
