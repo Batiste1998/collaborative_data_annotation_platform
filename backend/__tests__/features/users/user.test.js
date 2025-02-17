@@ -5,7 +5,7 @@ describe('Feature: User Management', () => {
     username: 'testuser',
     email: 'test@example.com',
     password: 'password123',
-    role: 'annotator'
+    role: 'annotator',
   }
 
   beforeEach(async () => {
@@ -17,7 +17,7 @@ describe('Feature: User Management', () => {
       it('should create a new user account', async () => {
         const user = new User(userData)
         const savedUser = await user.save()
-        
+
         expect(savedUser._id).toBeDefined()
         expect(savedUser.email).toBe(userData.email)
         expect(savedUser.username).toBe(userData.username)
@@ -54,15 +54,15 @@ describe('Feature: User Management', () => {
       it('should update user information', async () => {
         const updatedData = {
           username: 'updateduser',
-          email: 'updated@example.com'
+          email: 'updated@example.com',
         }
-        
+
         const updatedUser = await User.findByIdAndUpdate(
           existingUser._id,
           updatedData,
           { new: true }
         )
-        
+
         expect(updatedUser.username).toBe(updatedData.username)
         expect(updatedUser.email).toBe(updatedData.email)
       })

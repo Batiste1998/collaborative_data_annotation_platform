@@ -3,7 +3,6 @@ const router = express.Router()
 const { loginUser } = require('../controllers/userController')
 const { validationResult } = require('express-validator')
 
-// Validation middleware
 const validate = (req, res, next) => {
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
@@ -12,7 +11,6 @@ const validate = (req, res, next) => {
   next()
 }
 
-// Login route
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body

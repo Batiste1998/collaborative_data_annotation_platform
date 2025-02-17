@@ -4,9 +4,6 @@ const jwt = require('jsonwebtoken')
 
 const getAllUsers = async (requestingUserId, role) => {
   try {
-    // Only admin can see all users
-    // Managers can see annotators
-    // Annotators can only see themselves
     let query = {}
     if (role === 'manager') {
       query = { role: 'annotator' }
@@ -38,7 +35,9 @@ const getManagersOnly = async () => {
 
 const getAnnotatorsOnly = async () => {
   try {
-    const annotators = await User.find({ role: 'annotator' }).select('-password')
+    const annotators = await User.find({ role: 'annotator' }).select(
+      '-password'
+    )
     if (!annotators || annotators.length === 0) {
       throw new Error('No annotators found')
     }
@@ -55,7 +54,6 @@ const getUserById = async (id, requestingUserId, role) => {
       throw new Error('No user found')
     }
 
-    // Check permissions
     if (
       role !== 'admin' &&
       role !== 'manager' &&
@@ -64,7 +62,6 @@ const getUserById = async (id, requestingUserId, role) => {
       throw new Error('Not authorized to view this user')
     }
 
-    // Managers can only view annotators
     if (role === 'manager' && user.role !== 'annotator') {
       throw new Error('Managers can only view annotators')
     }
@@ -79,7 +76,6 @@ const createUser = async (userData) => {
   try {
     const user = new User(userData)
     await user.save()
-    // Exclude password from response
     const userObject = user.toObject()
     delete userObject.password
     return userObject
@@ -90,23 +86,19 @@ const createUser = async (userData) => {
 
 const updateUser = async (id, updates, requestingUserId, role) => {
   try {
-    // Check if user exists
     const userToUpdate = await User.findById(id)
     if (!userToUpdate) {
       throw new Error('No user found')
     }
 
-    // Check permissions
     if (role !== 'admin' && requestingUserId !== id) {
       throw new Error('Not authorized to update this user')
     }
 
-    // Only admin can change roles
     if (updates.role && role !== 'admin') {
       throw new Error('Only admin can change user roles')
     }
 
-    // Hash password if it's being updated
     if (updates.password) {
       updates.password = await bcrypt.hash(updates.password, 10)
     }
@@ -124,18 +116,15 @@ const updateUser = async (id, updates, requestingUserId, role) => {
 
 const deleteUser = async (id, requestingUserId, role) => {
   try {
-    // Check if user exists
     const userToDelete = await User.findById(id)
     if (!userToDelete) {
       throw new Error('No user found')
     }
 
-    // Check permissions
     if (role !== 'admin' && requestingUserId !== id) {
       throw new Error('Not authorized to delete this user')
     }
 
-    // Prevent deleting the last admin
     if (userToDelete.role === 'admin') {
       const adminCount = await User.countDocuments({ role: 'admin' })
       if (adminCount <= 1) {
@@ -160,7 +149,6 @@ const loginUser = async (email, password) => {
     if (!isMatch) {
       throw new Error('Invalid login credentials')
     }
-    // Check if user is active
     if (!user.isActive) {
       throw new Error('Account is deactivated')
     }
@@ -199,5 +187,5 @@ module.exports = {
   deleteUser,
   loginUser,
   getManagersOnly,
-  getAnnotatorsOnly
+  getAnnotatorsOnly,
 }

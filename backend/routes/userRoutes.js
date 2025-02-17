@@ -8,7 +8,7 @@ const {
   updateUser,
   deleteUser,
   getManagersOnly,
-  getAnnotatorsOnly
+  getAnnotatorsOnly,
 } = require('../controllers/userController')
 const { authenticateToken, requireRole } = require('../middlewares/auth')
 const {
@@ -18,7 +18,6 @@ const {
   adminCreateUserValidation,
 } = require('../validation/userValidation')
 
-// Validation middleware
 const validate = (req, res, next) => {
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
@@ -27,27 +26,34 @@ const validate = (req, res, next) => {
   next()
 }
 
-// Get managers (admin only)
-router.get('/managers', authenticateToken, requireRole('admin'), async (req, res) => {
-  try {
-    const managers = await getManagersOnly()
-    res.json(managers)
-  } catch (error) {
-    res.status(400).json({ message: error.message })
+router.get(
+  '/managers',
+  authenticateToken,
+  requireRole('admin'),
+  async (req, res) => {
+    try {
+      const managers = await getManagersOnly()
+      res.json(managers)
+    } catch (error) {
+      res.status(400).json({ message: error.message })
+    }
   }
-})
+)
 
-// Get annotators (admin and managers)
-router.get('/annotators', authenticateToken, requireRole('admin', 'manager'), async (req, res) => {
-  try {
-    const annotators = await getAnnotatorsOnly()
-    res.json(annotators)
-  } catch (error) {
-    res.status(400).json({ message: error.message })
+router.get(
+  '/annotators',
+  authenticateToken,
+  requireRole('admin', 'manager'),
+  async (req, res) => {
+    try {
+      const annotators = await getAnnotatorsOnly()
+      res.json(annotators)
+    } catch (error) {
+      res.status(400).json({ message: error.message })
+    }
   }
-})
+)
 
-// Get all users (with role-based filtering)
 router.get('/', authenticateToken, async (req, res) => {
   try {
     const users = await getAllUsers(req.user.id, req.user.role)
@@ -57,7 +63,6 @@ router.get('/', authenticateToken, async (req, res) => {
   }
 })
 
-// Get user by ID (with role-based access control)
 router.get(
   '/:id',
   authenticateToken,
@@ -76,14 +81,11 @@ router.get(
   }
 )
 
-// Create new user (public route for registration)
 router.post('/', createUserValidation, validate, async (req, res) => {
   try {
-    // Set default role to annotator for new registrations
     const userData = {
       ...req.body,
-      role: 'annotator', // Only admin can create users with different roles
-      isActive: true,
+      role: 'annotator',
     }
     const user = await createUser(userData)
     res.status(201).json(user)
@@ -92,7 +94,6 @@ router.post('/', createUserValidation, validate, async (req, res) => {
   }
 })
 
-// Update user (with role-based permissions)
 router.put(
   '/:id',
   authenticateToken,
@@ -116,7 +117,6 @@ router.put(
   }
 )
 
-// Delete user (with role-based permissions)
 router.delete(
   '/:id',
   authenticateToken,
@@ -135,7 +135,6 @@ router.delete(
   }
 )
 
-// Admin route to create users with specific roles
 router.post(
   '/admin/create',
   authenticateToken,
@@ -144,7 +143,6 @@ router.post(
   validate,
   async (req, res) => {
     try {
-      // Admin can specify role and isActive
       const userData = {
         ...req.body,
         role: req.body.role || 'annotator',

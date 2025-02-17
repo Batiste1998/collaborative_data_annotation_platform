@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
+import { ChatProvider } from './context/ChatContext'
 import RoleRoute from './components/RoleRoute'
 import LoginPage from './pages/auth/LoginPage'
 import RegistrerPage from './pages/auth/RegistrerPage'
@@ -13,6 +14,7 @@ import HomePage from './pages/HomePage'
 import ManageUsers from './pages/ManageUsers'
 import ManageAnnotators from './pages/ManageAnnotators'
 import TaskManagement from './pages/TaskManagement'
+import ChatPage from './pages/ChatPage'
 import { useAuth } from './context/AuthContext'
 
 // Composant pour rediriger vers le bon dashboard en fonction du rôle
@@ -39,7 +41,8 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <Routes>
+        <ChatProvider>
+          <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/registrer" element={<RegistrerPage />} />
           <Route path="/" element={<HomePage />} />
@@ -122,7 +125,16 @@ function App() {
               </RoleRoute>
             }
           />
-        </Routes>
+          <Route
+            path="/chat"
+            element={
+              <RoleRoute allowedRoles={['admin', 'manager', 'annotator']}>
+                <ChatPage />
+              </RoleRoute>
+            }
+          />
+          </Routes>
+        </ChatProvider>
       </AuthProvider>
     </BrowserRouter>
   )

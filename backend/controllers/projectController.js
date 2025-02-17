@@ -18,8 +18,8 @@ exports.getProjects = async (req, res) => {
     const projects = await Project.find({
       $or: [{ owner: req.user._id }, { 'collaborators.user': req.user._id }],
     })
-    .populate('owner', 'username email')
-    .populate('collaborators.user', 'username email')
+      .populate('owner', 'username email')
+      .populate('collaborators.user', 'username email')
     res.json(projects)
   } catch (error) {
     res.status(500).json({ error: error.message })
@@ -68,12 +68,14 @@ exports.updateProject = async (req, res) => {
     // Vérifier les permissions
     const isOwner = project.owner._id.toString() === req.user._id
     const isManager = project.collaborators.some(
-      c => c.user._id.toString() === req.user._id && c.role === 'manager'
+      (c) => c.user._id.toString() === req.user._id && c.role === 'manager'
     )
 
     // Seuls le propriétaire et les managers peuvent modifier le projet
     if (!isOwner && !isManager) {
-      return res.status(403).json({ error: 'Not authorized to update this project' })
+      return res
+        .status(403)
+        .json({ error: 'Not authorized to update this project' })
     }
 
     updates.forEach((update) => (project[update] = req.body[update]))
@@ -104,12 +106,14 @@ exports.deleteProject = async (req, res) => {
     // Vérifier les permissions
     const isOwner = project.owner._id.toString() === req.user._id
     const isManager = project.collaborators.some(
-      c => c.user._id.toString() === req.user._id && c.role === 'manager'
+      (c) => c.user._id.toString() === req.user._id && c.role === 'manager'
     )
 
     // Seuls le propriétaire et les managers peuvent supprimer le projet
     if (!isOwner && !isManager) {
-      return res.status(403).json({ error: 'Not authorized to delete this project' })
+      return res
+        .status(403)
+        .json({ error: 'Not authorized to delete this project' })
     }
 
     await Project.findByIdAndDelete(project._id)
@@ -133,14 +137,16 @@ exports.addCollaborator = async (req, res) => {
     // Vérifier les permissions
     const isOwner = project.owner._id.toString() === req.user._id
     const isManager = project.collaborators.some(
-      c => c.user._id.toString() === req.user._id && c.role === 'manager'
+      (c) => c.user._id.toString() === req.user._id && c.role === 'manager'
     )
 
     const { userId, role } = req.body
 
     // Vérifier les permissions selon le rôle
     if (!isOwner && !isManager) {
-      return res.status(403).json({ error: 'Not authorized to add collaborators' })
+      return res
+        .status(403)
+        .json({ error: 'Not authorized to add collaborators' })
     }
 
     // Les managers ne peuvent ajouter que des annotateurs
@@ -184,17 +190,19 @@ exports.removeCollaborator = async (req, res) => {
     // Vérifier les permissions
     const isOwner = project.owner._id.toString() === req.user._id
     const isManager = project.collaborators.some(
-      c => c.user._id.toString() === req.user._id && c.role === 'manager'
+      (c) => c.user._id.toString() === req.user._id && c.role === 'manager'
     )
 
     // Vérifier les permissions selon le rôle
     if (!isOwner && !isManager) {
-      return res.status(403).json({ error: 'Not authorized to remove collaborators' })
+      return res
+        .status(403)
+        .json({ error: 'Not authorized to remove collaborators' })
     }
 
     // Trouver le collaborateur à retirer
     const collaboratorToRemove = project.collaborators.find(
-      c => c.user._id.toString() === req.params.userId
+      (c) => c.user._id.toString() === req.params.userId
     )
 
     if (!collaboratorToRemove) {
@@ -203,11 +211,13 @@ exports.removeCollaborator = async (req, res) => {
 
     // Les managers ne peuvent retirer que des annotateurs
     if (isManager && collaboratorToRemove.role !== 'annotator') {
-      return res.status(403).json({ error: 'Managers can only remove annotators' })
+      return res
+        .status(403)
+        .json({ error: 'Managers can only remove annotators' })
     }
 
     project.collaborators = project.collaborators.filter(
-      c => c.user._id.toString() !== req.params.userId
+      (c) => c.user._id.toString() !== req.params.userId
     )
 
     await project.save()
@@ -242,21 +252,23 @@ exports.updateDatasetStatus = async (req, res) => {
     // Vérifier que l'utilisateur est assigné à cet élément ou est manager/owner
     const isOwner = project.owner._id.toString() === req.user._id
     const isManager = project.collaborators.some(
-      c => c.user._id.toString() === req.user._id && c.role === 'manager'
+      (c) => c.user._id.toString() === req.user._id && c.role === 'manager'
     )
     const isAssigned = datasetItem.assignedTo?.toString() === req.user._id
 
     if (!isOwner && !isManager && !isAssigned) {
-      return res.status(403).json({ error: 'Not authorized to update this item' })
+      return res
+        .status(403)
+        .json({ error: 'Not authorized to update this item' })
     }
 
     // Les annotateurs ne peuvent mettre à jour que leurs propres tâches
     if (!isOwner && !isManager && isAssigned) {
       // Vérifier les transitions de statut autorisées pour les annotateurs
       const allowedTransitions = {
-        'pending': ['in_progress'],
-        'in_progress': ['annotated'],
-        'annotated': ['in_progress']
+        pending: ['in_progress'],
+        in_progress: ['annotated'],
+        annotated: ['in_progress'],
       }
 
       if (!allowedTransitions[datasetItem.status]?.includes(req.body.status)) {
@@ -286,7 +298,7 @@ exports.assignDatasetItem = async (req, res) => {
     // Vérifier les permissions
     const isOwner = project.owner._id.toString() === req.user._id
     const isManager = project.collaborators.some(
-      c => c.user._id.toString() === req.user._id && c.role === 'manager'
+      (c) => c.user._id.toString() === req.user._id && c.role === 'manager'
     )
 
     if (!isOwner && !isManager) {
@@ -295,11 +307,13 @@ exports.assignDatasetItem = async (req, res) => {
 
     // Vérifier que l'utilisateur à assigner est un annotateur du projet
     const isAnnotator = project.collaborators.some(
-      c => c.user._id.toString() === req.body.userId && c.role === 'annotator'
+      (c) => c.user._id.toString() === req.body.userId && c.role === 'annotator'
     )
 
     if (!isAnnotator) {
-      return res.status(400).json({ error: 'User must be an annotator of this project' })
+      return res
+        .status(400)
+        .json({ error: 'User must be an annotator of this project' })
     }
 
     // Trouver et mettre à jour l'élément du dataset

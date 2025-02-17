@@ -22,12 +22,20 @@ const Header = () => {
             </div>
             <div className="flex items-center gap-4">
                 {isAuthenticated() && (
-                    <button
-                        onClick={handleLogout}
-                        className="px-4 py-1 text-white transition-colors duration-200 border rounded-full border-white/50 hover:bg-white/10 font-Gelasio"
-                    >
-                        Déconnexion
-                    </button>
+                    <>
+                        <button
+                            onClick={() => navigate('/chat')}
+                            className="px-4 py-1 text-white transition-colors duration-200 border rounded-full border-white/50 hover:bg-white/10 font-Gelasio"
+                        >
+                            Chat
+                        </button>
+                        <button
+                            onClick={handleLogout}
+                            className="px-4 py-1 text-white transition-colors duration-200 border rounded-full border-white/50 hover:bg-white/10 font-Gelasio"
+                        >
+                            Déconnexion
+                        </button>
+                    </>
                 )}
                 <p className="px-4 py-1 text-base text-white border border-white rounded-full w-fit font-Gelasio h-fit">2025</p>
             </div>

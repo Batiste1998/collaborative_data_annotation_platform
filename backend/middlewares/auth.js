@@ -12,8 +12,6 @@ const authenticateToken = async (req, res, next) => {
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
 
-    // Since we now include all necessary user info in the token,
-    // we don't need to query the database again
     req.user = {
       _id: decoded.id,
       role: decoded.role,
